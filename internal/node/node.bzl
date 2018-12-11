@@ -87,6 +87,7 @@ def _write_loader_script(ctx):
             "TEMPLATED_user_workspace_name": ctx.workspace_name,
             "TEMPLATED_node_modules_root": node_modules_root,
             "TEMPLATED_install_source_map_support": str(ctx.attr.install_source_map_support).lower(),
+            "TEMPLATED_source_map_support_package": ctx.attr.source_map_support_package,
             "TEMPLATED_bin_dir": ctx.bin_dir.path,
             "TEMPLATED_gen_dir": ctx.genfiles_dir.path,
         },
@@ -177,6 +178,11 @@ _NODEJS_EXECUTABLE_ATTRS = {
         Enable this to get stack traces that point to original sources, e.g. if the program was written
         in TypeScript.""",
         default = True,
+    ),
+    "source_map_support_package": attr.string(
+        doc = """A package to require() at runtime that maps node stack traces to
+        original sources using the sourcemap""",
+        default = "@bazel/source-map-support",
     ),
     "configuration_env_vars": attr.string_list(
         doc = """Pass these configuration environment variables to the resulting binary.
@@ -340,7 +346,7 @@ The runtime will pause before executing the program, allowing you to connect a
 remote debugger.
 """
 
-def nodejs_binary_macro(name, data = [], args = [], visibility = None, tags = [], testonly = 0, **kwargs):
+def nodejs_binary_macro(name, data = [], args = [], visibility = None, tags = [], testonly = 0, source_map_support_package = "@bazel/source-map-support", **kwargs):
     """This macro exists only to wrap the nodejs_binary as an .exe for Windows.
 
     This is exposed in the public API at `//:defs.bzl` as `nodejs_binary`, so most
@@ -355,11 +361,16 @@ def nodejs_binary_macro(name, data = [], args = [], visibility = None, tags = []
       testonly: applied to nodejs_binary and wrapper binary
       **kwargs: passed to the nodejs_binary
     """
+    all_data = data + ["@bazel_tools//tools/bash/runfiles"]
+    if source_map_support_package:
+        all_data.append("@npm//" + source_map_support_package)
+
     nodejs_binary(
         name = "%s_bin" % name,
-        data = data + ["@bazel_tools//tools/bash/runfiles"],
+        data = all_data,
         testonly = testonly,
         visibility = ["//visibility:private"],
+        source_map_support_package = source_map_support_package,
         **kwargs
     )
 
@@ -373,7 +384,7 @@ def nodejs_binary_macro(name, data = [], args = [], visibility = None, tags = []
         visibility = visibility,
     )
 
-def nodejs_test_macro(name, data = [], args = [], visibility = None, tags = [], **kwargs):
+def nodejs_test_macro(name, data = [], args = [], visibility = None, tags = [], source_map_support_package = "@bazel/source-map-support", **kwargs):
     """This macro exists only to wrap the nodejs_test as an .exe for Windows.
 
     This is exposed in the public API at `//:defs.bzl` as `nodejs_test`, so most
@@ -387,10 +398,14 @@ def nodejs_test_macro(name, data = [], args = [], visibility = None, tags = [], 
       tags: applied to the wrapper binary
       **kwargs: passed to the nodejs_test
     """
+    all_data = data + ["@bazel_tools//tools/bash/runfiles"]
+    if source_map_support_package:
+        all_data.append("@npm//" + source_map_support_package)
     nodejs_test(
         name = "%s_bin" % name,
-        data = data + ["@bazel_tools//tools/bash/runfiles"],
+        data = all_data,
         testonly = 1,
+        source_map_support_package = source_map_support_package,
         tags = ["manual"],
         **kwargs
     )

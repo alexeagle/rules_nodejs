@@ -460,12 +460,9 @@ module.constructor._resolveFilename = function(request, parent) {
 // source-map-support.
 if (TEMPLATED_install_source_map_support) {
   try {
-    require('source-map-support').install();
-  } catch (e) {
-    console.error(`WARNING: source-map-support module not installed.
-    Stack traces from languages like TypeScript will point to generated .js files.
-    Set install_source_map_support = False in TEMPLATED_target to turn off this warning.
-    `);
+    require('TEMPLATED_source_map_support_package').install();
+  } catch (_) {
+    // Don't spam users, they're typically not the ones who can fix this anyway.
   }
 }
 // Load all bootstrap modules before loading the entrypoint.
