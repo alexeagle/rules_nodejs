@@ -139,6 +139,17 @@ function generatePackageBuildFiles(pkg) {
 
   const binAliasesBuildFile = BUILD_FILE_HEADER + printPackageBinAliases(pkg);
   writeFileSync(path.posix.join(pkg._dir, 'bin', 'BUILD.bazel'), binAliasesBuildFile);
+
+  // IF We are writing files for @bazel/typescript
+  // the package.json would contain something like
+  // { "bazelRepositories": { "rules_typescript": ["package.bzl"] } }
+  //   and package.bzl is now part of the NPM distribution
+  // TODO: throw if an npm package was named "rules_typescript"
+  // FIXME: generalize by actually reading from package.json, this is a hacky prototype
+  writeFileSync(path.posix.join('rules_typescript', 'BUILD.bazel'), `#Marker ${pkg}`);
+  writeFileSync(path.posix.join('rules_typescript', 'package.bzl'),
+      // FIXME: get this content from the @bazel/typescript package
+      fs.readFileSync('/usr/local/google/home/alexeagle/Projects/rules_typescript/package.bzl', {encoding: 'utf-8'}));
 }
 
 function generateScopeBuildFiles(scope, pkgs) {
