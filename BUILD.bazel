@@ -34,6 +34,7 @@ npm_package(
         "LICENSE",
         "defs.bzl",
         "package.bzl",
+        "WORKSPACE"
     ],
     # Don't replace the default 0.0.0-PLACEHOLDER for this npm_package since
     # we are packaging up the packager itself and this replacement will break it

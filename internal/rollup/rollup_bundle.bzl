@@ -333,6 +333,21 @@ def run_sourcemapexplorer(ctx, js, map, output):
         ],
     )
 
+def run_brotli(ctx, inputDir, outputDir):
+    """Execute the Brotli compression utility.
+
+    Args:
+      ctx: Bazel's rule execution context
+      input: any directory
+      output: directory with the compressed files
+    """
+    ctx.actions.run(
+        executable = ctx.executable._brotli,
+        inputs = [inputDir],
+        outputs = [outputDir],
+        arguments = [inputDir.path, outputDir.path],
+    )
+
 def _generate_toplevel_entry(ctx, bundles_folder, output):
     """Generates a native ESmodule that imports the entry point
     """
@@ -408,19 +423,32 @@ def _generate_code_split_entry(ctx, bundles_folder, output):
         },
     )
 
+PACKAGES = [
+    "external/npm/node_modules/@angular/common/fesm5",
+    "external/npm/node_modules/@angular/core/fesm5",
+    "external/npm/node_modules/rxjs",
+]
+PLUGIN_CONFIG = "{sideEffectFreeModules: [\n%s]}" % ",\n".join(
+    ["        '.es6/{0}'".format(p) for p in PACKAGES],
+)
+BO_ROLLUP = "build_bazel_rules_nodejs_rollup_deps/node_modules/@angular-devkit/build-optimizer/src/build-optimizer/rollup-plugin.js"
+BO_PLUGIN = "require('%s').default(%s)" % (BO_ROLLUP, PLUGIN_CONFIG)
+
 def _rollup_bundle(ctx):
     if ctx.attr.additional_entry_points:
         # Generate code split bundles if additional entry points have been specified.
         # See doc for additional_entry_points for more information.
         # Note: "_chunks" is needed on the output folders since ctx.label.name + ".es2015" is already
         # a folder that contains the re-rooted es2015 sources
-        rollup_config = write_rollup_config(ctx, output_format = "es", additional_entry_points = ctx.attr.additional_entry_points)
+        rollup_config = write_rollup_config(ctx, [BO_PLUGIN], output_format = "es", additional_entry_points = ctx.attr.additional_entry_points)
         code_split_es2015_output_dir = ctx.actions.declare_directory(ctx.label.name + "_chunks_es2015")
         _run_rollup(ctx, _collect_es2015_sources(ctx), rollup_config, code_split_es2015_output_dir)
-        code_split_es2015_min_output_dir = ctx.actions.declare_directory(ctx.label.name + "_chunks_min_es2015")
-        _run_terser(ctx, code_split_es2015_output_dir, code_split_es2015_min_output_dir, None)
+        code_split_es2015_min_output_before_compress_dir = ctx.actions.declare_directory(ctx.label.name + "_chunks_min_es2015__tmp__")
+        _run_terser(ctx, code_split_es2015_output_dir, code_split_es2015_min_output_before_compress_dir, None, comments = False)
         code_split_es2015_min_debug_output_dir = ctx.actions.declare_directory(ctx.label.name + "_chunks_min_debug_es2015")
         _run_terser(ctx, code_split_es2015_output_dir, code_split_es2015_min_debug_output_dir, None, debug = True)
+        code_split_es2015_min_output_dir = ctx.actions.declare_directory(ctx.label.name + "_chunks_min_es2015")
+        run_brotli(ctx, code_split_es2015_min_output_before_compress_dir, code_split_es2015_min_output_dir)
 
         code_split_es5_output_dir = ctx.actions.declare_directory(ctx.label.name + "_chunks")
         _run_tsc_on_directory(ctx, code_split_es2015_output_dir, code_split_es5_output_dir)
@@ -622,6 +650,11 @@ ROLLUP_ATTRS = {
     "deps": attr.label_list(
         doc = """Other rules that produce JavaScript outputs, such as `ts_library`.""",
         aspects = ROLLUP_DEPS_ASPECTS,
+    ),
+    "_brotli": attr.label(
+        executable = True,
+        cfg = "host",
+        default = Label("@build_bazel_rules_nodejs//internal/rollup:brotli-directory"),
     ),
     "_no_explore_html": attr.label(
         default = Label("@build_bazel_rules_nodejs//internal/rollup:no_explore.html"),

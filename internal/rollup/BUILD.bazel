@@ -79,6 +79,15 @@ nodejs_binary(
 )
 
 nodejs_binary(
+    name = "brotli-directory",
+    data = [":brotli-directory.js"],
+    entry_point = "build_bazel_rules_nodejs/internal/rollup/brotli-directory.js",
+    install_source_map_support = False,
+    node_modules = "@build_bazel_rules_nodejs_rollup_deps//:node_modules",
+    visibility = ["//visibility:public"],
+)
+
+nodejs_binary(
     name = "source-map-explorer",
     entry_point = "build_bazel_rules_nodejs_rollup_deps/node_modules/source-map-explorer",
     install_source_map_support = False,

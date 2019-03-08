@@ -173,7 +173,7 @@ const config = {
     // the 'es2015' option for rollup to prioritize the 'es2015' entry point
     // with fallback to 'module' and 'main'.
     nodeResolve({
-      es2015: true,
+      //es2015: true,
       module: true,
       jsnext: true,
       main: true,
