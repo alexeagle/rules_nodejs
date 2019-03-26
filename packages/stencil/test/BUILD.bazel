@@ -1,0 +1,7 @@
+load("@npm_bazel_stencil//:index.bzl", "stencil_component")
+
+stencil_component(
+    name = "test_component",
+    srcs = ["my-component.tsx"],
+    namespace = "ignite",
+)
