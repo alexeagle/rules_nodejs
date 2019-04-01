@@ -15,19 +15,24 @@ git clean -fx
 readonly VERSION=$1
 if [[ -z "$VERSION" ]]; then
   echo "Usage: mirror_bazel.sh [version] [rc]"
+  echo "version can be nightly"
   exit 1
 fi
 # RC can be supplied, e.g. rc4
 # otherwise we take the final release
 readonly RC=$2
-if [[ -z "$RC" ]]; then
-  readonly FOLDER="release"
-  readonly NEWVERSION=$VERSION
-  readonly TAG="latest"
-else
+if [[ ! -z "$RC" ]]; then
   readonly FOLDER=$RC
   readonly NEWVERSION="${VERSION}-${RC}"
   readonly TAG="next"
+elif [[ "$VERSION" == "nightly" ]]; then
+  BAZEL_NIGHTLY_SHA=$(wget -O - https://storage.googleapis.com/bazel-untrusted-builds/last_green_commit/github.com/bazelbuild/bazel.git/bazel-bazel)
+  readonly TAG="nightly"
+  readonly NEWVERSION=
+else
+  readonly FOLDER="release"
+  readonly NEWVERSION=$VERSION
+  readonly TAG="latest"
 fi
 readonly BASENAME="bazel-${VERSION}${RC}"
 readonly BASEURI="https://releases.bazel.build/${VERSION}/${FOLDER}"
@@ -36,12 +41,14 @@ readonly NPM=$(which npm)
 function doMirror () {
   local PACKAGE=$1
   local FILENAME=$2
-
+  
+  if [[ ! -z $BAZEL_NIGHTLY_SHA ]]; then
+    case $ "darwin": "macos", "linux": "ubuntu1404", "windows": "windows"
   wget -P ${PACKAGE}/ ${BASEURI}/${FILENAME}
   tmp=$(mktemp)
   jq ".bin.bazel = \"./${FILENAME}\" | .version = \"${NEWVERSION}\"" < ${PACKAGE}/package.json > $tmp
   mv $tmp ${PACKAGE}/package.json
-  node --max-old-space-size=8192 $NPM publish $PACKAGE --tag $TAG
+  node --max-old-space-size=8192 $NPM publish $PACKAGE --dry-run --tag $TAG
 }
 
 doMirror bazel-win32_x64 ${BASENAME}-windows-x86_64.exe
@@ -51,4 +58,4 @@ doMirror bazel-linux_x64 ${BASENAME}-linux-x86_64
 tmp=$(mktemp)
 jq ".version = \"${NEWVERSION}\" | .optionalDependencies[] = \"${NEWVERSION}\"" < bazel/package.json > $tmp
 mv $tmp bazel/package.json
-$NPM publish bazel --tag $TAG
+$NPM publish bazel --dry-run --tag $TAG
