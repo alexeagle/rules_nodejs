@@ -13,6 +13,8 @@ ts_devserver(
     port = 8080,
     # We'll collect all the devmode JS sources from these TypeScript libraries
     deps = [":app"],
+    # Expose this to other examples, so we can test visibility of generated manifest file
+    visibility = ["//:__subpackages__"],
 )
 
 rollup_bundle(
