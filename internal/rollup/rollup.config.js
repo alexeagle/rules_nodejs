@@ -206,6 +206,7 @@ if (enableCodeSplitting) {
 else {
   config.input = inputs[0];
   config.output['name'] = 'TMPL_global_name';
+  config.output['extends'] = true;
 }
 
 module.exports = config;
