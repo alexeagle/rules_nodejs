@@ -109,7 +109,10 @@ function main() {
   scopes.forEach(scope => generateScopeBuildFiles(scope, pkgs));
 }
 
-module.exports = {main};
+module.exports = {
+  main,
+  printPackage
+};
 
 /**
  * Generates the root BUILD file.
