@@ -22,6 +22,7 @@ _SOURCES = [
     "_prelude.js",
     "advanced.txt",
     "empty.js",
+    "index.js",
     "index.min.js",
     "usage.txt"
 ]

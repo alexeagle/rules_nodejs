@@ -36,7 +36,7 @@ browserify-wrapped: running with
 
   // browserify is ncc bundled & terser minified into third_party
   const browserify = require.resolve(
-      'build_bazel_rules_nodejs/third_party/github.com/browserify/browserify/index.min.js');
+      'build_bazel_rules_nodejs/third_party/github.com/browserify/browserify/index.js');
 
   // named-amd plugin is vendored in under third_party
   const namedAmd = require.resolve(

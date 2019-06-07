@@ -1863,6 +1863,7 @@ Browserify.prototype._createDeps = function (opts) {
             }
             
             if (file) {
+                console.error('222', basedir, file);
                 var ex = '/' + relativePath(basedir, file);
                 if (self._external.indexOf(ex) >= 0) {
                     return cb(null, ex);
@@ -1886,7 +1887,7 @@ Browserify.prototype._createDeps = function (opts) {
             } else cb(err, null, pkg)
         });
     };
-    
+    console.error('builtins', opts.builtins)
     if (opts.builtins === false) {
         mopts.modules = {};
         self._exclude.push.apply(self._exclude, Object.keys(builtins));
@@ -2211,6 +2212,7 @@ function isExternalModule (file) {
 }
 function relativePath (from, to) {
     // Replace \ with / for OS-independent behavior
+    console.error('111', from, to);
     return cachedPathRelative(from, to).replace(/\\/g, '/');
 }
 
@@ -25939,6 +25941,10 @@ function resolve(id, opts, cb) {
 
         var modules = opts.modules || Object.create(null);
         var shim_path = modules[id];
+        console.error('333', id, modules[id], shim_path);
+        if (Number.isInteger(modules[id])) {
+          console.error(Object.keys(opts), opts.modules)
+        }
         if (shim_path) {
             return cb(null, shim_path);
         }
