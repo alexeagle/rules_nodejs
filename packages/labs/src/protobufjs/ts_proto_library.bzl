@@ -13,6 +13,9 @@
 # limitations under the License.
 "Protocol Buffers"
 
+load("@build_bazel_rules_nodejs//:declaration_provider.bzl", "DeclarationInfo")
+load("@build_bazel_rules_nodejs//:providers.bzl", "JSEcmaScriptModuleInfo", "JSModuleInfo", "JSNamedModuleInfo")
+
 def _run_pbjs(actions, executable, output_name, proto_files, suffix = ".js", wrap = "amd", amd_name = ""):
     js_file = actions.declare_file(output_name + suffix)
 
@@ -81,7 +84,7 @@ def _ts_proto_library(ctx):
 
     output_name = ctx.attr.output_name or ctx.label.name
 
-    js_es5 = _run_pbjs(
+    js_named = _run_pbjs(
         ctx.actions,
         ctx.executable,
         output_name,
@@ -91,7 +94,7 @@ def _ts_proto_library(ctx):
             ctx.label.package,
         ] if p]),
     )
-    js_es6 = _run_pbjs(
+    js_esm = _run_pbjs(
         ctx.actions,
         ctx.executable,
         output_name,
@@ -101,19 +104,39 @@ def _ts_proto_library(ctx):
     )
 
     # pbts doesn't understand '.mjs' extension so give it the es5 file
-    dts = _run_pbts(ctx.actions, ctx.executable, js_es5)
+    dts = _run_pbts(ctx.actions, ctx.executable, js_named)
 
     # Return a structure that is compatible with the deps[] of a ts_library.
+    declarations = depset([dts])
+    named_sources = depset([js_named])
+    esm_sources = depset([js_esm])
     return struct(
-        files = depset([dts]),
+        providers = [
+            DefaultInfo(files = declarations),
+            DeclarationInfo(
+                declarations = declarations,
+                transitive_declarations = declarations,
+            ),
+            JSModuleInfo(
+                sources = named_sources,
+                module_format = "amd",
+            ),
+            JSNamedModuleInfo(
+                sources = named_sources,
+            ),
+            JSEcmaScriptModuleInfo(
+                sources = esm_sources,
+            ),
+        ],
+        # TODO: remove when consumers are updated
         typescript = struct(
-            declarations = depset([dts]),
-            transitive_declarations = depset([dts]),
+            declarations = declarations,
+            transitive_declarations = declarations,
             type_blacklisted_declarations = depset(),
-            es5_sources = depset([js_es5]),
-            es6_sources = depset([js_es6]),
-            transitive_es5_sources = depset(),
-            transitive_es6_sources = depset([js_es6]),
+            es5_sources = named_sources,
+            es6_sources = esm_sources,
+            # still needed for compat with rules_typescript
+            transitive_es6_sources = esm_sources,
         ),
     )
 

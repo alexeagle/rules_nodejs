@@ -1,7 +1,9 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "rollup_bundle")
 load("@build_bazel_rules_nodejs//internal/web_package:web_package.bzl", "web_package")
+load("@npm//@babel/cli:index.bzl", "babel")
 load("@npm//http-server:index.bzl", "http_server")
 load("@npm_bazel_protractor//:index.bzl", "protractor_web_test_suite")
+load("@npm_bazel_rollup//:index.bzl", "rollup_bundle")
+load("@npm_bazel_terser//:index.bzl", "terser_minified")
 load("@npm_bazel_typescript//:index.bzl", "ts_config", "ts_devserver", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
@@ -20,9 +22,39 @@ ts_devserver(
 
 rollup_bundle(
     name = "bundle",
-    enable_code_splitting = False,
     entry_point = ":app.ts",
     deps = [":app"],
+)
+
+babel(
+    name = "bundle.es2015",
+    outs = [
+        "bundle.es2015.js",
+        "bundle.es2015.js.map",
+    ],
+    args = [
+        "$(location :bundle.js)",
+        "--no-babelrc",
+        "--source-maps",
+        "--presets=@babel/preset-env",
+        "--out-file",
+        "$(location :bundle.es2015.js)",
+    ],
+    data = [
+        "bundle.js",
+        "bundle.js.map",
+        "@npm//@babel/preset-env",
+    ],
+)
+
+terser_minified(
+    name = "bundle.min",
+    src = ":bundle",
+)
+
+terser_minified(
+    name = "bundle.min.es2015",
+    src = ":bundle.es2015",
 )
 
 web_package(
@@ -30,8 +62,8 @@ web_package(
     assets = [
         # For differential loading, we supply both an ESModule entry point and an es5 entry point
         # The injector will put two complimentary script tags in the index.html
-        ":bundle.min.js",
-        ":bundle.min.es2015.js",
+        ":bundle.min",
+        ":bundle.min.es2015",
         "//styles:base.css",
         "//styles:test.css",
     ],

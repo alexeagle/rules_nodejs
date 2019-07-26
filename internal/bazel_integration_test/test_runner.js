@@ -271,6 +271,16 @@ const isWindows = process.platform === 'win32';
 const bazelBinary =
     require.resolve(`${config.bazelBinaryWorkspace}/bazel${isWindows ? '.exe' : ''}`);
 
+if (DEBUG) {
+  log(`
+
+********************************************************************************
+bazel binary under test is ${bazelBinary}
+workspace under test root is ${workspaceRoot}
+********************************************************************************
+`);
+}
+
 log(`running 'bazel version'`);
 let spawnedProcess = spawnSync(bazelBinary, ['version'], {cwd: workspaceRoot, stdio: 'inherit'});
 if (spawnedProcess.status) {

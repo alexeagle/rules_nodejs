@@ -173,11 +173,13 @@ const config = {
       // with the amd plugin.
       include: /\.ngfactory\.js$/i,
     }),
-    commonjs(), {
+    commonjs(),
+    {
       name: 'notResolved',
       resolveId: notResolved,
     },
-    sourcemaps(), rollupJson({preferConst: true})
+    sourcemaps(),
+    rollupJson({preferConst: true}),
   ]),
   output: {
     banner,

@@ -20,10 +20,11 @@ They support module mapping: any targets in the transitive dependencies with
 a `module_name` attribute can be `require`d by that name.
 """
 
-load("@build_bazel_rules_nodejs//internal/common:node_module_info.bzl", "NodeModuleSources", "collect_node_modules_aspect")
+load("@build_bazel_rules_nodejs//:declaration_provider.bzl", "DeclarationInfo")
+load("@build_bazel_rules_nodejs//:providers.bzl", "JSModuleInfo")
+load("@build_bazel_rules_nodejs//internal/common:node_module_info.bzl", "NodeModuleInfo", "node_modules_aspect")
 load("//internal/common:expand_into_runfiles.bzl", "expand_location_into_runfiles")
 load("//internal/common:module_mappings.bzl", "module_mappings_runtime_aspect")
-load("//internal/common:sources_aspect.bzl", "sources_aspect")
 load("//internal/common:windows_utils.bzl", "create_windows_native_launcher_script", "is_windows")
 
 def _trim_package_node_modules(package_name):
@@ -48,8 +49,8 @@ def _compute_node_modules_root(ctx):
     """
     node_modules_root = None
     if ctx.attr.node_modules:
-        if NodeModuleSources in ctx.attr.node_modules:
-            node_modules_root = "/".join([ctx.attr.node_modules[NodeModuleSources].workspace, "node_modules"])
+        if NodeModuleInfo in ctx.attr.node_modules:
+            node_modules_root = "/".join([ctx.attr.node_modules[NodeModuleInfo].workspace, "node_modules"])
         elif ctx.files.node_modules:
             # ctx.files.node_modules is not an empty list
             workspace = ctx.attr.node_modules.label.workspace_root.split("/")[1] if ctx.attr.node_modules.label.workspace_root else ctx.workspace_name
@@ -59,8 +60,8 @@ def _compute_node_modules_root(ctx):
                 "node_modules",
             ] if f])
     for d in ctx.attr.data:
-        if NodeModuleSources in d:
-            possible_root = "/".join([d[NodeModuleSources].workspace, "node_modules"])
+        if NodeModuleInfo in d:
+            possible_root = "/".join([d[NodeModuleInfo].workspace, "node_modules"])
             if not node_modules_root:
                 node_modules_root = possible_root
             elif node_modules_root != possible_root:
@@ -130,10 +131,10 @@ def _nodejs_binary_impl(ctx):
     node_modules = depset(ctx.files.node_modules)
 
     # Also include files from npm fine grained deps as inputs.
-    # These deps are identified by the NodeModuleSources provider.
+    # These deps are identified by the NodeModuleInfo provider.
     for d in ctx.attr.data:
-        if NodeModuleSources in d:
-            node_modules = depset(transitive = [node_modules, d[NodeModuleSources].sources])
+        if NodeModuleInfo in d:
+            node_modules = depset(transitive = [node_modules, d[NodeModuleInfo].transitive_sources])
 
     # Using a depset will allow us to avoid flattening files and sources
     # inside this loop. This should reduce the performances hits,
@@ -141,8 +142,10 @@ def _nodejs_binary_impl(ctx):
     sources = depset()
 
     for d in ctx.attr.data:
-        if hasattr(d, "node_sources"):
-            sources = depset(transitive = [sources, d.node_sources])
+        if DeclarationInfo in d:
+            sources = depset(transitive = [sources, d[DeclarationInfo].transitive_declarations])
+        if JSModuleInfo in d:
+            sources = depset(transitive = [sources, d[JSModuleInfo].sources])
         if hasattr(d, "files"):
             sources = depset(transitive = [sources, d.files])
 
@@ -262,7 +265,7 @@ _NODEJS_EXECUTABLE_ATTRS = {
     "data": attr.label_list(
         doc = """Runtime dependencies which may be loaded during execution.""",
         allow_files = True,
-        aspects = [sources_aspect, module_mappings_runtime_aspect, collect_node_modules_aspect],
+        aspects = [node_modules_aspect, module_mappings_runtime_aspect],
     ),
     "default_env_vars": attr.string_list(
         doc = """Default environment variables that are added to `configuration_env_vars`.

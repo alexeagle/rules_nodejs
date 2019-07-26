@@ -1,0 +1,33 @@
+load("@build_bazel_rules_nodejs//internal/common:typescript_mock_lib.bzl", "mock_typescript_lib")
+load("@npm_bazel_typescript//:index.from_src.bzl", "ts_library")
+
+package(default_visibility = ["//packages/rollup:__subpackages__"])
+
+genrule(
+    name = "copy_user",
+    srcs = [
+        ":user.mjs",
+    ],
+    outs = [
+        ":user.js",
+    ],
+    cmd = "cp $< $@",
+)
+
+mock_typescript_lib(
+    name = "userlib",
+    srcs = [
+        ":user.d.ts",
+        ":user.mjs",
+    ],
+)
+
+ts_library(
+    name = "foolib",
+    srcs = ["index.ts"],
+    module_name = "foolib",
+    # Don't allow deep imports under here,
+    # and give it the AMD name "foolib", not "foolib/index"
+    module_root = "index.d.ts",
+    deps = [":userlib"],
+)

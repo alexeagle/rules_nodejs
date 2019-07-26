@@ -14,7 +14,8 @@
 
 "TypeScript compilation"
 
-load("@build_bazel_rules_nodejs//internal/common:node_module_info.bzl", "NodeModuleSources", "collect_node_modules_aspect")
+load("@build_bazel_rules_nodejs//:providers.bzl", "transitive_js_ecma_script_module_info", "transitive_js_module_info", "transitive_js_named_module_info")
+load("@build_bazel_rules_nodejs//internal/common:node_module_info.bzl", "NodeModuleInfo", "node_modules_aspect")
 
 # pylint: disable=unused-argument
 # pylint: disable=missing-docstring
@@ -45,7 +46,7 @@ def _trim_package_node_modules(package_name):
 #       but wouldn't work for other rules like nodejs_binary
 def _uses_bazel_managed_node_modules(ctx):
     # If the user put a filegroup as the node_modules it will have no provider
-    return NodeModuleSources in ctx.attr.node_modules
+    return NodeModuleInfo in ctx.attr.node_modules
 
 # This function is similar but slightly different than _compute_node_modules_root
 # in /internal/node/node.bzl. TODO(gregmagolan): consolidate these functions
@@ -60,8 +61,8 @@ def _compute_node_modules_root(ctx):
     """
     node_modules_root = None
     if ctx.attr.node_modules:
-        if NodeModuleSources in ctx.attr.node_modules:
-            node_modules_root = "/".join(["external", ctx.attr.node_modules[NodeModuleSources].workspace, "node_modules"])
+        if NodeModuleInfo in ctx.attr.node_modules:
+            node_modules_root = "/".join(["external", ctx.attr.node_modules[NodeModuleInfo].workspace, "node_modules"])
         elif ctx.files.node_modules:
             # ctx.files.node_modules is not an empty list
             node_modules_root = "/".join([f for f in [
@@ -70,8 +71,8 @@ def _compute_node_modules_root(ctx):
                 "node_modules",
             ] if f])
     for d in ctx.attr.deps:
-        if NodeModuleSources in d:
-            possible_root = "/".join(["external", d[NodeModuleSources].workspace, "node_modules"])
+        if NodeModuleInfo in d:
+            possible_root = "/".join(["external", d[NodeModuleInfo].workspace, "node_modules"])
             if not node_modules_root:
                 node_modules_root = possible_root
             elif node_modules_root != possible_root:
@@ -117,11 +118,11 @@ def _compile_action(ctx, inputs, outputs, tsconfig_file, node_opts, description 
     action_inputs.extend(_filter_ts_inputs(ctx.files.node_modules))
 
     # Also include files from npm fine grained deps as action_inputs.
-    # These deps are identified by the NodeModuleSources provider.
+    # These deps are identified by the NodeModuleInfo provider.
     for d in ctx.attr.deps:
-        if NodeModuleSources in d:
+        if NodeModuleInfo in d:
             # Note: we can't avoid calling .to_list() on sources
-            action_inputs.extend(_filter_ts_inputs(d[NodeModuleSources].sources.to_list()))
+            action_inputs.extend(_filter_ts_inputs(d[NodeModuleInfo].transitive_sources.to_list()))
 
     if ctx.file.tsconfig:
         action_inputs.append(ctx.file.tsconfig)
@@ -269,6 +270,24 @@ def _ts_library_impl(ctx):
         devmode_compile_action = _devmode_compile_action,
         tsc_wrapped_tsconfig = tsc_wrapped_tsconfig,
     )
+
+    # Add in new JS providers
+    ts_providers["providers"].extend([
+        transitive_js_module_info(
+            module_format = "umd",
+            sources = ts_providers["typescript"]["es5_sources"],
+            deps = ctx.attr.deps,
+        ),
+        transitive_js_named_module_info(
+            sources = ts_providers["typescript"]["es5_sources"],
+            deps = ctx.attr.deps,
+        ),
+        transitive_js_ecma_script_module_info(
+            sources = ts_providers["typescript"]["es6_sources"],
+            deps = ctx.attr.deps,
+        ),
+    ])
+
     return ts_providers_dict_to_struct(ts_providers)
 
 ts_library = rule(
@@ -397,7 +416,7 @@ either:
             doc = "If using tsickle, instruct it to translate types to ClosureJS format",
         ),
         "deps": attr.label_list(
-            aspects = DEPS_ASPECTS + [collect_node_modules_aspect],
+            aspects = DEPS_ASPECTS + [node_modules_aspect],
             doc = "Compile-time dependencies, typically other ts_library targets",
         ),
     }),

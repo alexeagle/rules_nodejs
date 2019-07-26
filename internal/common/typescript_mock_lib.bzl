@@ -19,19 +19,49 @@ rules_typescript without introducing a circular dependency between
 rules_nodejs and rules_typescript repositories.
 """
 
+load("@build_bazel_rules_nodejs//:declaration_provider.bzl", "DeclarationInfo")
+load("@build_bazel_rules_nodejs//:providers.bzl", "JSEcmaScriptModuleInfo", "JSModuleInfo", "JSNamedModuleInfo")
+
 def _mock_typescript_lib(ctx):
-    es5_sources = depset()
-    transitive_decls = depset()
-    for s in ctx.attr.srcs:
-        files_list = s.files.to_list()
-        es5_sources = depset([f for f in files_list if f.path.endswith(".js")], transitive = [es5_sources])
-        transitive_decls = depset([f for f in files_list if f.path.endswith(".d.ts")], transitive = [transitive_decls])
+    named_sources = depset([f for f in ctx.files.srcs if f.path.endswith(".js")])
+    esm_sources = depset([f for f in ctx.files.srcs if f.path.endswith(".mjs")])
+    declarations = depset([f for f in ctx.files.srcs if f.path.endswith(".d.ts")])
+
     return struct(
-        runfiles = ctx.runfiles(collect_default = True, collect_data = True),
         typescript = struct(
-            es5_sources = es5_sources,
-            transitive_declarations = transitive_decls,
+            declarations = declarations,
+            devmode_manifest = None,
+            es5_sources = named_sources,
+            es6_sources = esm_sources,
+            replay_params = None,
+            transitive_declarations = declarations,
+            transitive_es5_sources = named_sources,
+            transitive_es6_sources = esm_sources,
+            tsickle_externs = [],
+            type_blacklisted_declarations = depset(),
         ),
+        providers = [
+            DefaultInfo(
+                runfiles = ctx.runfiles(
+                    collect_default = True,
+                    collect_data = True,
+                ),
+            ),
+            DeclarationInfo(
+                declarations = declarations,
+                transitive_declarations = declarations,
+            ),
+            JSModuleInfo(
+                sources = named_sources,
+                module_format = "umd",
+            ),
+            JSNamedModuleInfo(
+                sources = named_sources,
+            ),
+            JSEcmaScriptModuleInfo(
+                sources = esm_sources,
+            ),
+        ],
     )
 
 mock_typescript_lib = rule(

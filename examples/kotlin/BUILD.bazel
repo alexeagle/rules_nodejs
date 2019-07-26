@@ -1,11 +1,13 @@
 # Add rules here to build your software
 # See https://docs.bazel.build/versions/master/build-ref.html#BUILD_files
 
-load("@build_bazel_rules_nodejs//:index.bzl", "rollup_bundle")
 load("@build_bazel_rules_nodejs//internal/web_package:web_package.bzl", "web_package")
 load("@io_bazel_rules_kotlin//kotlin:kotlin.bzl", "kt_js_import", "kt_js_library")
+load("@npm//@babel/cli:index.bzl", "babel")
 load("@npm//http-server:index.bzl", "http_server")
 load("@npm_bazel_jasmine//:index.bzl", "jasmine_node_test")
+load("@npm_bazel_rollup//:index.bzl", "rollup_bundle")
+load("@npm_bazel_terser//:index.bzl", "terser_minified")
 
 # Grab a Maven dependency
 kt_js_import(
@@ -31,13 +33,44 @@ rollup_bundle(
     ],
 )
 
+babel(
+    name = "bundle.es2015",
+    outs = [
+        "bundle.es2015.js",
+        "bundle.es2015.js.map",
+    ],
+    args = [
+        "$(location :bundle.js)",
+        "--no-babelrc",
+        "--source-maps",
+        "--presets=@babel/preset-env",
+        "--out-file",
+        "$(location :bundle.es2015.js)",
+    ],
+    data = [
+        "bundle.js",
+        "bundle.js.map",
+        "@npm//@babel/preset-env",
+    ],
+)
+
+terser_minified(
+    name = "bundle.min",
+    src = ":bundle",
+)
+
+terser_minified(
+    name = "bundle.min.es2015",
+    src = ":bundle.es2015",
+)
+
 web_package(
     name = "package",
     assets = [
         # For differential loading, we supply both an ESModule entry point and an es5 entry point
         # The injector will put two complimentary script tags in the index.html
-        ":bundle.min.js",
-        ":bundle.min.es2015.js",
+        ":bundle.min",
+        ":bundle.min.es2015",
     ],
     data = [":bundle"],
     index_html = "index.html",

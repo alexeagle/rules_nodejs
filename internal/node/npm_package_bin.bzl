@@ -1,5 +1,6 @@
 "A generic rule to run a tool that appears in node_modules/.bin"
 
+load("@build_bazel_rules_nodejs//internal/common:node_module_info.bzl", "NodeModuleInfo", "node_modules_aspect")
 load("@build_bazel_rules_nodejs//internal/linker:link_node_modules.bzl", "module_mappings_aspect", "register_node_modules_linker")
 
 # Note: this API is chosen to match nodejs_binary
@@ -7,7 +8,7 @@ load("@build_bazel_rules_nodejs//internal/linker:link_node_modules.bzl", "module
 _ATTRS = {
     "outs": attr.output_list(),
     "args": attr.string_list(mandatory = True),
-    "data": attr.label_list(allow_files = True, aspects = [module_mappings_aspect]),
+    "data": attr.label_list(allow_files = True, aspects = [module_mappings_aspect, node_modules_aspect]),
     "output_dir": attr.bool(),
     "tool": attr.label(
         executable = True,
@@ -23,6 +24,17 @@ def _expand_location(ctx, s):
     s = s.replace("$@", "/".join([ctx.bin_dir.path, ctx.label.package, ctx.attr.name]))
     return ctx.expand_location(s, targets = ctx.attr.data)
 
+def _inputs(ctx):
+    inputs_depsets = []
+
+    # Also include files from npm fine grained deps as inputs.
+    # These deps are identified by the NodeModuleInfo provider.
+    for d in ctx.attr.data:
+        if NodeModuleInfo in d:
+            # Note: we can't avoid calling .to_list() on sources
+            inputs_depsets.append(d[NodeModuleInfo].transitive_sources)
+    return depset(ctx.files.data, transitive = inputs_depsets).to_list()
+
 def _impl(ctx):
     if ctx.attr.output_dir and ctx.attr.outs:
         fail("Only one of output_dir and outs may be specified")
@@ -30,7 +42,7 @@ def _impl(ctx):
         fail("One of output_dir and outs must be specified")
 
     args = ctx.actions.args()
-    inputs = ctx.files.data[:]
+    inputs = _inputs(ctx)
     outputs = []
     if ctx.attr.output_dir:
         outputs = [ctx.actions.declare_directory(ctx.attr.name)]

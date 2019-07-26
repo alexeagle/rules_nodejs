@@ -14,6 +14,8 @@
 
 "Rule to run the terser binary under bazel"
 
+load("@build_bazel_rules_nodejs//:providers.bzl", "JSModuleInfo")
+
 _DOC = """Run the terser minifier.
 
 Typical example:
@@ -40,7 +42,7 @@ Can be a .js file, a rule producing .js files as its default output, or a rule p
 
 Note that you can pass multiple files to terser, which it will bundle together.
 If you want to do this, you can pass a filegroup here.""",
-        allow_files = [".js"],
+        allow_files = True,
         mandatory = True,
     ),
     "config_file": attr.label(
@@ -95,17 +97,34 @@ so that it only affects the current build.
     ),
 }
 
+def _filter_js(files):
+    return [f for f in files if f.is_directory or f.extension == "js" or f.extension == "mjs"]
+
+def _filter_sourcemap(files):
+    return [f for f in files if f.basename.endswith(".js.map")]
+
 def _terser(ctx):
     "Generate actions to create terser config run terser"
 
     # CLI arguments; see https://www.npmjs.com/package/terser#command-line-usage
     args = ctx.actions.args()
-    inputs = ctx.files.src[:]
+
+    inputs = []
     outputs = []
 
-    directory_srcs = [s for s in ctx.files.src if s.is_directory]
+    # If src has a JSModuleInfo provider than use that otherwise use DefaultInfo files
+    if JSModuleInfo in ctx.attr.src:
+        inputs.extend(ctx.attr.src[JSModuleInfo].sources.to_list())
+        module_format = ctx.attr.src[JSModuleInfo].module_format
+    else:
+        inputs.extend(ctx.files.src[:])
+        module_format = ""
+
+    sources = _filter_js(inputs)
+    sourcemaps = _filter_sourcemap(inputs)
+    directory_srcs = [s for s in sources if s.is_directory]
     if len(directory_srcs) > 0:
-        if len(ctx.files.src) > 1:
+        if len(sources) > 1:
             fail("When directories are passed to terser_minified, there should be only one input")
         outputs.append(ctx.actions.declare_directory(ctx.label.name))
     else:
@@ -113,7 +132,7 @@ def _terser(ctx):
         if ctx.attr.sourcemap:
             outputs.append(ctx.actions.declare_file("%s.js.map" % ctx.label.name))
 
-    args.add_all([s.path for s in ctx.files.src])
+    args.add_all([s.path for s in sources])
     args.add_all(["--output", outputs[0].path])
 
     debug = ctx.attr.debug or "DEBUG" in ctx.var.keys()
@@ -126,9 +145,12 @@ def _terser(ctx):
         # see https://github.com/terser-js/terser#command-line-usage
         source_map_opts = ["includeSources", "base=" + ctx.bin_dir.path]
 
-        # We support only inline sourcemaps for now.
-        # It's hard to pair up the .js inputs with corresponding .map files
-        source_map_opts.append("content=inline")
+        if len(sourcemaps) == 0:
+            source_map_opts.append("content=inline")
+        elif len(sourcemaps) == 1:
+            source_map_opts.append("content='%s'" % sourcemaps[0].path)
+        else:
+            fail("When sourcemap is True, there should only be one or none input sourcemaps")
 
         # This option doesn't work in the config file, only on the CLI
         args.add_all(["--source-map", ",".join(source_map_opts)])
@@ -156,6 +178,7 @@ def _terser(ctx):
 
     return [
         DefaultInfo(files = depset(outputs)),
+        JSModuleInfo(module_format = module_format, sources = depset(outputs)),
     ]
 
 terser_minified = rule(
