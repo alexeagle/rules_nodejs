@@ -14,6 +14,7 @@
 
 "TypeScript compilation"
 
+load("@build_bazel_rules_nodejs//:js_providers.bzl", "JSEcmaScriptModuleInfo", "JSNamedModuleInfo")
 load("@build_bazel_rules_nodejs//internal/common:node_module_info.bzl", "NodeModuleSources", "collect_node_modules_aspect")
 
 # pylint: disable=unused-argument
@@ -269,6 +270,14 @@ def _ts_library_impl(ctx):
         devmode_compile_action = _devmode_compile_action,
         tsc_wrapped_tsconfig = tsc_wrapped_tsconfig,
     )
+
+    # TODO: delete the "typescript" key from the dict before 1.0
+    ts_providers["providers"].append(JSEcmaScriptModuleInfo(
+        sources = ts_providers["typescript"]["es6_sources"],
+    ))
+    ts_providers["providers"].append(JSNamedModuleInfo(
+        sources = ts_providers["typescript"]["es5_sources"],
+    ))
     return ts_providers_dict_to_struct(ts_providers)
 
 ts_library = rule(
