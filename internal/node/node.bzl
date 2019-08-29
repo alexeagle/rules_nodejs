@@ -119,11 +119,12 @@ def _write_loader_script(ctx):
         is_executable = True,
     )
 
-def _short_path_to_manifest_path(ctx, short_path):
-    if short_path.startswith("../"):
-        return short_path[3:]
+# Avoid writing non-normalized paths (workspace/../other_workspace/path)
+def _to_manifest_path(ctx, file):
+    if file.short_path.startswith("../"):
+        return file.short_path[3:]
     else:
-        return ctx.workspace_name + "/" + short_path
+        return ctx.workspace_name + "/" + file.short_path
 
 def _nodejs_binary_impl(ctx):
     node_modules = depset(ctx.files.node_modules)
@@ -147,14 +148,8 @@ def _nodejs_binary_impl(ctx):
 
     _write_loader_script(ctx)
 
-    # Avoid writing non-normalized paths (workspace/../other_workspace/path)
-    if ctx.outputs.loader.short_path.startswith("../"):
-        script_path = ctx.outputs.loader.short_path[len("../"):]
-    else:
-        script_path = "/".join([
-            ctx.workspace_name,
-            ctx.outputs.loader.short_path,
-        ])
+    script_path = _to_manifest_path(ctx, ctx.outputs.loader)
+
     env_vars = "export BAZEL_TARGET=%s\n" % ctx.label
     for k in ctx.attr.configuration_env_vars:
         if k in ctx.var.keys():
@@ -175,7 +170,7 @@ def _nodejs_binary_impl(ctx):
         node_tool = node_tool_info.target_tool_path
         if node_tool_info.target_tool:
             node_tool_files += node_tool_info.target_tool.files.to_list()
-            node_tool = _short_path_to_manifest_path(ctx, node_tool_files[0].short_path)
+            node_tool = _to_manifest_path(ctx, node_tool_files[0])
 
         if not ctx.outputs.templated_args_file:
             templated_args = ctx.attr.templated_args
@@ -200,7 +195,9 @@ def _nodejs_binary_impl(ctx):
             templated_args.append(ctx.outputs.templated_args_file.short_path)
 
             # also be sure to include the params file in the program inputs
-            node_tool_files += [ctx.outputs.templated_args_file]
+            node_tool_files.append(ctx.outputs.templated_args_file)
+
+        node_tool_files.append(ctx.file._link_modules_script)
 
         substitutions = {
             "TEMPLATED_args": " ".join([
@@ -209,8 +206,9 @@ def _nodejs_binary_impl(ctx):
             ]),
             "TEMPLATED_env_vars": env_vars,
             "TEMPLATED_expected_exit_code": str(expected_exit_code),
+            "TEMPLATED_link_modules_script": _to_manifest_path(ctx, ctx.file._link_modules_script),
             "TEMPLATED_node": node_tool,
-            "TEMPLATED_repository_args": _short_path_to_manifest_path(ctx, ctx.file._repository_args.short_path),
+            "TEMPLATED_repository_args": _to_manifest_path(ctx, ctx.file._repository_args),
             "TEMPLATED_script_path": script_path,
         }
         ctx.actions.expand_template(
@@ -262,7 +260,7 @@ _NODEJS_EXECUTABLE_ATTRS = {
         Chooses a subset of the configuration environment variables (taken from ctx.var), which also
         includes anything specified via the --define flag.
         Note, this can lead to different outputs produced by this rule.""",
-        default = [],
+        default = ["DEBUG", "VERBOSE_LOGS"],
     ),
     "data": attr.label_list(
         doc = """Runtime dependencies which may be loaded during execution.""",
@@ -417,6 +415,10 @@ _NODEJS_EXECUTABLE_ATTRS = {
     ),
     "_launcher_template": attr.label(
         default = Label("//internal/node:node_launcher.sh"),
+        allow_single_file = True,
+    ),
+    "_link_modules_script": attr.label(
+        default = Label("//internal/linker:link_node_modules.js"),
         allow_single_file = True,
     ),
     "_loader_template": attr.label(
