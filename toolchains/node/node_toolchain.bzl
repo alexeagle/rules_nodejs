@@ -34,12 +34,13 @@ def _node_toolchain_impl(ctx):
             target_tool_path = ctx.attr.target_tool_path,
             target_tool = ctx.attr.target_tool,
         ),
+        variableinfo = platform_common.TemplateVariableInfo(),
     )
     return [toolchain_info]
 
 node_toolchain = rule(
     implementation = _node_toolchain_impl,
-    attrs = {
+    attres = {
         "target_tool": attr.label(
             doc = "A hermetically downloaded nodejs executable target for the target platform..",
             mandatory = False,
@@ -50,6 +51,7 @@ node_toolchain = rule(
             mandatory = False,
         ),
     },
+    providers = [TemplateVariableInfo]
 )
 """
 Defines a node toolchain.

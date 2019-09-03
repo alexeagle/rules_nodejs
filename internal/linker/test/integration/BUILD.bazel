@@ -8,6 +8,13 @@ linked(
     ],
 )
 
+# Declare a binary target so we can make the toolchain dependencies on bash and node
+sh_binary(
+    name = "test_bin",
+    srcs = ["test.sh"],
+    toolchains = ["@build_bazel_rules_nodejs//toolchains/node:toolchain_type"],
+)
+
 sh_test(
     name = "test",
     srcs = [

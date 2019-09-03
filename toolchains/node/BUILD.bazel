@@ -54,7 +54,10 @@ filegroup(
 )
 
 # node toolchain type
-toolchain_type(name = "toolchain_type")
+toolchain_type(
+    name = "toolchain_type",
+    visibility = ["//visibility:public"],
+)
 
 toolchain(
     name = "node_linux_toolchain",
