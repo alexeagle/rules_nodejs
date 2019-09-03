@@ -23,6 +23,12 @@ NodeInfo = provider(
     },
 )
 
+def _to_manifest_path(ctx, file):
+    if file.short_path.startswith("../"):
+        return file.short_path[3:]
+    else:
+        return ctx.workspace_name + "/" + file.short_path
+
 def _node_toolchain_impl(ctx):
     if ctx.attr.target_tool and ctx.attr.target_tool_path:
         fail("Can only set one of target_tool or target_tool_path but both where set.")
@@ -35,7 +41,10 @@ def _node_toolchain_impl(ctx):
             target_tool = ctx.attr.target_tool,
         ),
     )
-    return [toolchain_info]
+    variable_info = platform_common.TemplateVariableInfo({
+        "NODE_PATH": _to_manifest_path(ctx, ctx.attr.target_tool.files.to_list()[0]),
+    })
+    return [toolchain_info, variable_info]
 
 node_toolchain = rule(
     implementation = _node_toolchain_impl,

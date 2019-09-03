@@ -4,10 +4,11 @@
 export VERBOSE_LOGS=1
 export NODE_DEBUG=module
 
+ls -R ..
 # Assume node is on the machine
 # This needs to be changed to use bazel toolchains before merging
-/usr/bin/env node internal/linker/link_node_modules.js internal/linker/test/integration/_example.module_mappings.json
-/usr/bin/env node --preserve-symlinks-main internal/linker/test/integration/program.js > $TEST_TMPDIR/out
+node internal/linker/link_node_modules.js internal/linker/test/integration/_example.module_mappings.json
+node --preserve-symlinks-main internal/linker/test/integration/program.js > $TEST_TMPDIR/out
 
 out=`cat $TEST_TMPDIR/out`
 if [[ "$out" != "1.2.3_a" ]]; then
