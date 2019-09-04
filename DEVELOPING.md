@@ -24,6 +24,32 @@ To do a full clean run:
 yarn clean_all
 ```
 
+## Testing on Windows
+
+If you're not a Windows user, it's daunting to get a CI failure that seems it will take hours to reproduce and debug.
+Here's one recipe to get up and running in about an hour:
+
+1. In a Google Cloud project (I'm using Angular's devinfra project internal-200822) you add a compute VM instance: https://console.cloud.google.com/compute/instancesAdd?project=internal-200822
+1. Pick a region that's near you
+1. Change Boot disk to Windows with Desktop, I used "Windows Server 2019 Datacenter Server with Desktop Experience, x64 built on 20190827". Other defaults are okay.
+1. Choose to set a password for your user account
+1. After the instance boots, use the RDP button on the instance page. It will pop up a Chrome extension to run the remote desktop protocol.
+1. Once you're logged in, use IE11 (yeah, seems like the only choice?) to install:
+- GitHub Desktop https://desktop.github.com (because setting up auth is too hard otherwise)
+- Visual C++ redistro https://www.microsoft.com/en-us/download/details.aspx?id=48145
+- MSYS2 from https://msys2.org
+- Open a `cmd.exe` shell and run `msys2` to open another shell, then `pacman -S zip unzip patch diffutils git` in there
+
+Prereqs are done, so now you:
+
+- In a powershell with admin enabled, `choco install bazel`
+
+Now you should be able to
+
+1. Clone your fork/branch with GitHub Desktop app
+1. start a `cmd.exe` shell
+1. run your `bazel build ...`
+
 ## Releasing
 
 Start from a clean checkout at master/HEAD.
