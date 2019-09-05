@@ -294,6 +294,8 @@ tasks:
     - "@bazel_workspace_b//subdir:bin"
     build_targets:
     - "//..."
+    build_flags:
+    - "--build_tag_filters=-fix-windows"
     test_flags:
     - "--test_tag_filters=-e2e,-examples,-fix-windows"
     test_targets:
