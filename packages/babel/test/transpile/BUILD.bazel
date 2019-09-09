@@ -1,0 +1,13 @@
+load("@build_bazel_rules_nodejs//internal/golden_file_test:golden_file_test.bzl", "golden_file_test")
+load("@npm_bazel_babel//:index.bzl", "babel_library")
+
+babel_library(
+    name = "transpile",
+    srcs = ["input.js"],
+)
+
+golden_file_test(
+    name = "test",
+    actual = ":transpile",
+    golden = "golden.js_",
+)
