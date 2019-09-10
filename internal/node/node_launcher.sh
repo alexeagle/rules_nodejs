@@ -150,7 +150,7 @@ if [ "${EXPECTED_EXIT_CODE}" -eq "0" ]; then
   exec "${node}" "${NODE_OPTIONS[@]}" "${script}" "${ARGS[@]}"
   # exec terminates execution of this shell script, nothing later will run.
 fi
-
+env
 set +e
 "${node}" "${NODE_OPTIONS[@]}" "${script}" "${ARGS[@]}"
 RESULT="$?"

@@ -1,0 +1,7 @@
+load("@npm_bazel_babel//:index.bzl", "babel_library")
+
+babel_library(
+    name = "presets",
+    srcs = ["input.js"],
+    config_file = ".babelrc",
+)
