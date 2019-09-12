@@ -23,6 +23,7 @@ load("//internal/common:collect_es6_sources.bzl", _collect_es2015_sources = "col
 load("//internal/common:module_mappings.bzl", "get_module_mappings")
 
 _ROLLUP_MODULE_MAPPINGS_ATTR = "rollup_module_mappings"
+_ROLLUP_BREAKING_CHANGE = True
 
 # Avoid using non-normalized paths (workspace/../other_workspace/path)
 def _to_manifest_path(ctx, file):
@@ -450,6 +451,13 @@ def _generate_code_split_entry(ctx, bundles_folder, output):
     )
 
 def _rollup_bundle(ctx):
+    if _ROLLUP_BREAKING_CHANGE:
+        fail("""
+**
+ The rollup_bundle rule in //internal has been removed.
+ See https://github.com/bazelbuild/rules_nodejs/wiki for instructions.
+**
+""")
     if len(ctx.attr.entry_point.files.to_list()) != 1:
         fail("labels in entry_point must contain exactly one file")
     if ctx.attr.additional_entry_points and not ctx.attr.enable_code_splitting:

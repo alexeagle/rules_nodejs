@@ -98,7 +98,10 @@ rollup_bundle(
 )
 ```
 """,
-        allow_single_file = [".js"],
+        # We permit .ts here because:
+        # - it helps migrate from the old rule
+        # - ts_library doesn't give labelled outputs
+        allow_single_file = [".js", ".ts"],
     ),
     "entry_points": attr.label_keyed_string_dict(
         doc = """The bundle's entry points (e.g. your main.js or app.js or index.js).
