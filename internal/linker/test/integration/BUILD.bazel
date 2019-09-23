@@ -35,6 +35,8 @@ linked(
     deps = [
         ":run_program",
         "//internal/linker/test/integration/dynamic_linked_pkg",
+        # Test for transitive deps - this depends on glob
+        "@npm//rimraf",
         "@npm//semver",
     ],
 )

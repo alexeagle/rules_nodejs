@@ -65,6 +65,8 @@ $(rlocation NODE_PATH) \
   $(rlocation $DIR/index.js) \
   $MODULES_MANIFEST
 
+ls -R
+
 $(rlocation NODE_PATH) \
   --preserve-symlinks-main \
   $(rlocation $DIR/test/integration/program.js) \

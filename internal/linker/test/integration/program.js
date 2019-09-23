@@ -12,3 +12,15 @@ const semver = require('semver');
 
 // This output should match what's in the golden.txt file
 console.log(a.addA(b.addB(c.addC(semver.clean(' =v1.2.3 ')))));
+
+// Test that transitive dependencies can be require'd.
+// rimraf depends on glob
+const fs = require('fs');
+console.error(process.env)
+fs.mkdirSync('delete_me');
+const rimraf = require('rimraf');
+rimraf('delete_me/**', () => {
+  if (fs.readdirSync('.').includes('delete_me')) {
+    throw new Error('rimraf failed');
+  }
+});
