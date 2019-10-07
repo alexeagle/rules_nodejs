@@ -16,6 +16,7 @@
 """
 
 load("@build_bazel_rules_nodejs//internal/golden_file_test:golden_file_test.bzl", "golden_file_test")
+load("@npm//typescript:index.bzl", "tsc")
 load(
     ":index.bzl",
     _ts_devserver = "ts_devserver",
@@ -35,20 +36,29 @@ def ts_library(**kwargs):
     )
 
 # In rules_nodejs "builtin" package, we are creating the toolchain for building
-# tsc-wrapped and executing ts_library, so we cannot depend on them.
+# npm_package_bin and executing the linker, so we cannot depend on them.
 # However, we still want to be able to write our tooling in TypeScript.
 # This macro lets us check in the resulting .js files, and still ensure that they are
 # compiled from the .ts by using a golden file test.
-def checked_in_ts_library(name, checked_in_js, **kwargs):
-    ts_library(
+def checked_in_ts_library(name, srcs, deps, checked_in_js, **kwargs):
+    # We don't need the performance of ts_library
+    # and want more control over the compilation - we don't
+    # want inline sourcemaps.
+    tsc(
         name = name,
-        **kwargs
-    )
-
-    native.filegroup(
-        name = "_%s_es5" % name,
-        srcs = [name],
-        output_group = "es5_sources",
+        data = srcs + deps,
+        outs = [s.replace(".ts", ext) for s in srcs for ext in [".js", ".d.ts"]],
+        args = [
+            "--outDir",
+            "$@",
+            "--lib",
+            "es2017,dom",
+            "--downlevelIteration",
+            "--declaration",
+        ] + [
+            "$(location %s)" % s
+            for s in srcs
+        ],
     )
 
     # Don't trigger clang-format on the output js
@@ -56,7 +66,7 @@ def checked_in_ts_library(name, checked_in_js, **kwargs):
     # break the sourcemap
     native.genrule(
         name = "_%s_skip_formatting" % name,
-        srcs = ["_%s_es5" % name],
+        srcs = [s.replace(".ts", ".js") for s in srcs],
         outs = ["_%s_es5_no_format.js" % name],
         cmd = """echo -n "/* THIS FILE GENERATED FROM .ts; see BUILD.bazel */ /* clang-format off */" > $@; cat $< >> $@""",
     )

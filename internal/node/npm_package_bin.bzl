@@ -20,7 +20,12 @@ _ATTRS = {
 # because the output_dir is a tree artifact
 # so we weren't able to give it a label
 def _expand_location(ctx, s):
-    s = s.replace("$@", "/".join([ctx.bin_dir.path, ctx.label.package, ctx.attr.name]))
+    outdir_segments = [ctx.bin_dir.path, ctx.label.package]
+    if ctx.attr.output_dir:
+        # We'll write into a newly created directory
+        # named after the rule
+        outdir_segments.append(ctx.attr.name)
+    s = s.replace("$@", "/".join(outdir_segments))
     return ctx.expand_location(s, targets = ctx.attr.data)
 
 def _impl(ctx):
