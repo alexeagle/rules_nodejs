@@ -22,8 +22,10 @@ a `module_name` attribute can be `require`d by that name.
 
 load("@build_bazel_rules_nodejs//:providers.bzl", "JSNamedModuleInfo")
 load("@build_bazel_rules_nodejs//internal/common:npm_package_info.bzl", "NpmPackageInfo", "node_modules_aspect")
+
+#load("//internal/common:module_mappings.bzl", "module_mappings_runtime_aspect")
+load("@build_bazel_rules_nodejs//internal/linker:link_node_modules.bzl", "module_mappings_aspect", "register_node_modules_linker")
 load("//internal/common:expand_into_runfiles.bzl", "expand_location_into_runfiles")
-load("//internal/common:module_mappings.bzl", "module_mappings_runtime_aspect")
 load("//internal/common:windows_utils.bzl", "create_windows_native_launcher_script", "is_windows")
 
 def _trim_package_node_modules(package_name):
@@ -59,7 +61,7 @@ def _compute_node_modules_root(ctx):
                 "node_modules",
             ] if f])
     for d in ctx.attr.data:
-        if NpmPackageInfo in d:
+        if NpmPackageInfo in d and d[NpmPackageInfo].workspace != ctx.workspace_name:
             possible_root = "/".join([d[NpmPackageInfo].workspace, "node_modules"])
             if not node_modules_root:
                 node_modules_root = possible_root
@@ -196,7 +198,9 @@ def _nodejs_binary_impl(ctx):
 
         # also be sure to include the params file in the program inputs
         node_tool_files.append(ctx.outputs.templated_args_file)
-
+    linker_args = ctx.actions.args()
+    register_node_modules_linker(ctx, linker_args, node_tool_files)
+    print(linker_args)
     substitutions = {
         "TEMPLATED_args": " ".join([
             expand_location_into_runfiles(ctx, a)
@@ -263,7 +267,7 @@ _NODEJS_EXECUTABLE_ATTRS = {
     "data": attr.label_list(
         doc = """Runtime dependencies which may be loaded during execution.""",
         allow_files = True,
-        aspects = [node_modules_aspect, module_mappings_runtime_aspect],
+        aspects = [node_modules_aspect, module_mappings_aspect],
     ),
     "default_env_vars": attr.string_list(
         doc = """Default environment variables that are added to `configuration_env_vars`.

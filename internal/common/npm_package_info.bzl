@@ -21,9 +21,18 @@
 NpmPackageInfo = provider(
     doc = "Provides information about npm dependencies",
     fields = {
+        "name": """Npm package name, copied from the name field in the package.json.
+See https://docs.npmjs.com/files/package.json#name
+""",
         "direct_sources": "Depset of direct source files in this npm package",
+        "main": """The main field is a module ID that is the primary entry point to the program.
+
+That is, if your package is named foo, and a user installs it, and then does require("foo"), then your main module’s exports object will be returned.
+This should be a module ID relative to the root of your package folder.
+See https://docs.npmjs.com/files/package.json#main
+""",
         "sources": "Depset of direct & transitive source files in this npm package and in its dependencies",
-        "workspace": "The workspace name that this npm package is provided from",
+        "workspace": "The external workspace name that this npm package is provided from.",
     },
 )
 

@@ -135,6 +135,9 @@ done
 # Link the first-party modules into node_modules directory before running the actual program
 if [[ -n "$MODULES_MANIFEST" ]]; then
   "${node}" "${link_modules_script}" "${MODULES_MANIFEST}"
+else
+  echo "would have liked to run the linker for you, buddy" >&2
+  #exit 1
 fi
 
 # The EXPECTED_EXIT_CODE lets us write bazel tests which assert that

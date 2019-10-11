@@ -52,3 +52,10 @@ describe('npm_package srcs', () => {
          // has to live in the root of the repository in order for external/foo to appear inside it
      });
 });
+
+describe('npm_package outs', () => {
+  it('supports require of the package', () => {
+    const {a} = require('@bazel/shorten');
+    console.error(a);
+  });
+});

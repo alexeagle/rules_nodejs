@@ -1,0 +1,5 @@
+{
+    "private": true,
+    "name": "@bazel/shorten",
+    "main": "shorten.js"
+}
