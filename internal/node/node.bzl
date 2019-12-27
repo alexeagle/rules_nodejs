@@ -285,14 +285,18 @@ _NODEJS_EXECUTABLE_ATTRS = {
 This is separate from the default of `configuration_env_vars` so that a user can set `configuration_env_vars`
 without losing the defaults that should be set in most cases.
 
-The set of default  environment variables is:
+The set of default environment variables is:
 
-- `COMPILATION_MODE`: rules use this environment variable to produce optimized (eg. mangled and minimized) or debugging output
 - `VERBOSE_LOGS`: rules use this environment variable to turn on debug output in their logs
 - `DEBUG`: used by some npm packages to print debugging logs
 - `NODE_DEBUG`: used by node.js itself to print more logs
+
+> Note that using the `-c dbg` option to Bazel will select a debug output.
+> This sets the `COMPILATION_MODE` environment variable when running tools.
+> The tools themselves are not built with debug mode enabled, just their outputs.
+> So you should not include `COMPILATION_MODE` in this list. 
 """,
-        default = ["COMPILATION_MODE", "VERBOSE_LOGS", "DEBUG", "NODE_DEBUG"],
+        default = ["VERBOSE_LOGS", "DEBUG", "NODE_DEBUG"],
     ),
     "entry_point": attr.label(
         doc = """The script which should be executed first, usually containing a main function.
