@@ -1,0 +1,33 @@
+load("@npm//pulp:index.bzl", "pulp")
+load("@npm//purescript:index.bzl", "purs")
+
+# This is broken because pulp seems to rely on purs being in the $PATH and doesn't
+# use node's require resolution mechanism to locate it
+pulp(
+    name = "build",
+    args = [
+        "build",
+        "--build-path $(RULEDIR)",
+    ],
+    data = [
+        "bower.json",
+        "src/Main.purs",
+        "@npm//purescript",
+    ],
+    output_dir = True,
+)
+
+# This is broken because we make a wrapper script and try to require() the entry point,
+# but the node_modules/purescript/purs.bin is a binary.
+# Should be resolved when https://github.com/bazelbuild/rules_nodejs/pull/1455 is merged
+purs(
+    name = "compile",
+    args = [
+        "compile",
+        "--output $(RULEDIR)",
+    ],
+    data = [
+        "src/Main.purs",
+    ],
+    output_dir = True,
+)
