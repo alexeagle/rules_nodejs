@@ -1,0 +1,32 @@
+load("//packages/typescript:index.bzl", "ts_project")
+load("//:index.bzl", "nodejs_binary")
+
+# The ts_project macro should generate this, rather than plop it in user code
+nodejs_binary(
+    name = "tsc_watch",
+    data = [
+        "//packages/worker",
+        "@npm//typescript",
+        "@npm//protobufjs",
+        "worker_adapter.js",
+        "tsconfig.json",
+    ],
+    entry_point = "@npm//:node_modules/typescript/bin/tsc",
+    templated_args = [
+        "--node_options=--require=$$(rlocation $(rootpath worker_adapter.js))",
+        "--nobazel_patch_module_resolver",
+        "--project",
+        "$(execpath tsconfig.json)",
+         "--outDir",
+        # $(RULEDIR) is a shorthand for the dist/bin directory where Bazel requires we write outputs
+        # but nodejs_binary doesn't accept it?
+        "bazel-out/darwin-fastbuild/bin/%s" % package_name(),
+        "--watch",
+    ],
+)
+
+ts_project(
+    declaration = True,
+    supports_workers = True,
+    tsc = "tsc_watch",
+)

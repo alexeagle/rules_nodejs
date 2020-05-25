@@ -23,6 +23,13 @@ _ATTRS = {
     "srcs": attr.label_list(allow_files = True, mandatory = True),
     "tsc": attr.label(default = Label(_DEFAULT_TSC), executable = True, cfg = "host"),
     "tsconfig": attr.label(mandatory = True, allow_single_file = [".json"]),
+    "supports_workers": attr.bool(
+        doc = """Experimental! Use only with caution.
+
+Allows you to enable the Bazel Worker strategy for this project.
+This requires that the tsc binary support it.""",
+        default = False,
+    ),
 }
 
 # tsc knows how to produce the following kinds of output files.
@@ -49,6 +56,13 @@ def _join(*elements):
 
 def _ts_project_impl(ctx):
     arguments = ctx.actions.args()
+    execution_requirements = {}
+
+    if ctx.attr.supports_workers:
+        # Set to use a multiline param-file for worker mode
+        arguments.use_param_file("@%s", use_always = True)
+        arguments.set_param_file_format("multiline")
+        execution_requirements["supports-workers"] = "1"
 
     # Add user specified arguments *before* rule supplied arguments
     arguments.add_all(ctx.attr.args)
@@ -126,6 +140,7 @@ def _ts_project_impl(ctx):
             arguments = [arguments],
             outputs = outputs,
             executable = "tsc",
+            execution_requirements = execution_requirements,
             progress_message = "Compiling TypeScript project %s [tsc -p %s]" % (
                 ctx.label,
                 ctx.file.tsconfig.short_path,

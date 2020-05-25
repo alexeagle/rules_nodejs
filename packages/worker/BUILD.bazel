@@ -14,6 +14,7 @@
 
 load("@build_bazel_rules_nodejs//:tools/defaults.bzl", "pkg_npm")
 load("//third_party/github.com/bazelbuild/bazel-skylib:rules/copy_file.bzl", "copy_file")
+load("//internal/js_library:js_library.bzl", "js_library")
 
 # We reach inside the @bazel/typescript npm package to grab this one .js file
 # This avoids a complex refactoring where we extract that .ts file from tsc_wrapped to a common library
@@ -49,6 +50,13 @@ copy_file(
     name = "npm_version_check",
     src = "//internal:npm_version_check.js",
     out = ":npm_version_check.js",
+)
+
+js_library(
+    name = "worker",
+    package_name = "@bazel/worker",
+    srcs = ["copy_worker_js", "copy_worker_proto"],
+    visibility = ["//visibility:public"],
 )
 
 pkg_npm(
