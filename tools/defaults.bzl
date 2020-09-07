@@ -55,6 +55,7 @@ def pkg_npm(**kwargs):
         deps = deps,
         substitutions = dict(substitutions, **{
             "//packages/%s" % pkg: "//@bazel/%s" % pkg,
+            "0.0.0-PLACEHOLDER": "{STABLE_BUILD_SCM_VERSION}",
         }),
         visibility = visibility,
         **kwargs

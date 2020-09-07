@@ -4,6 +4,8 @@ tasks:
   ubuntu1604:
     name: ubuntu1604
     platform: ubuntu1604
+    run_flags:
+    - "--config=release"
     run_targets:
     - "@nodejs//:yarn_node_repositories"
     - "@nodejs//:yarn"
@@ -265,6 +267,8 @@ tasks:
   macos:
     name: macos
     platform: macos
+    run_flags:
+    - "--config=release"
     run_targets:
     - "@nodejs//:yarn_node_repositories"
     - "@nodejs//:yarn"
