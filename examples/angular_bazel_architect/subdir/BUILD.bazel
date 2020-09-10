@@ -10,6 +10,8 @@ filegroup(
     visibility = ["//:__subpackages__"],
 )
 
+exports_files(["chdir.js"])
+
 APPLICATION_DEPS = [
     "//subdir:common_deps",
     "@npm//@angular/cli",
@@ -30,6 +32,7 @@ architect(
     args = [
         "frontend:build",
         "--outputPath=$(@D)",
+        "--node_options=--require=./$(execpath chdir.js)",
     ],
     configuration_env_vars = ["NG_BUILD_CACHE"],
     data = glob(
@@ -41,6 +44,7 @@ architect(
             "src/test.ts",
         ],
     ) + APPLICATION_DEPS + [
+        "chdir.js",
         "tsconfig.app.json",
     ],
     output_dir = True,
@@ -51,6 +55,7 @@ architect(
     args = [
         "frontend:build:production",
         "--outputPath=$(@D)",
+        "--node_options=--require=./$(execpath chdir.js)",
     ],
     configuration_env_vars = ["NG_BUILD_CACHE"],
     data = glob(
@@ -62,6 +67,7 @@ architect(
             "src/test.ts",
         ],
     ) + APPLICATION_DEPS + [
+        "chdir.js",
         "tsconfig.app.json",
     ],
     output_dir = True,
@@ -69,11 +75,15 @@ architect(
 
 architect_test(
     name = "test",
-    args = ["frontend:test"],
+    args = [
+        "frontend:test",
+        "--node_options=--require=./$(execpath chdir.js)",
+    ],
     configuration_env_vars = ["NG_BUILD_CACHE"],
     data = glob([
         "src/**/*",
     ]) + APPLICATION_DEPS + [
+        "chdir.js",
         "karma.conf.js",
         "tsconfig.spec.json",
         "@npm//@types/jasmine",
@@ -102,7 +112,10 @@ architect_test(
 
 architect_test(
     name = "e2e",
-    args = ["frontend:e2e"],
+    args = [
+        "frontend:e2e",
+        "--node_options=--require=./$(execpath chdir.js)",
+    ],
     configuration_env_vars = ["NG_BUILD_CACHE"],
     data = glob([
         "src/*",
@@ -110,6 +123,7 @@ architect_test(
         "e2e/*",
         "e2e/**",
     ]) + APPLICATION_DEPS + [
+        "chdir.js",
         "tsconfig.app.json",
         "@npm//protractor",
         "@npm//jasmine-spec-reporter",

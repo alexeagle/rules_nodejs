@@ -9,6 +9,7 @@ architect(
         "frontend-lib:build",
         "--",
         "$(@D)",
+        "--node_options=--require=./$(execpath //subdir:chdir.js)",
     ],
     data = glob(
         [
@@ -19,6 +20,7 @@ architect(
             "src/test.ts",
         ],
     ) + [
+        "//subdir:chdir.js",
         "//subdir:common_deps",
         "ng-package.js",
         "package.json",
@@ -37,10 +39,14 @@ architect(
 
 architect_test(
     name = "test",
-    args = ["frontend-lib:test"],
+    args = [
+        "frontend-lib:test",
+        "--node_options=--require=./$(execpath //subdir:chdir.js)",
+    ],
     data = glob([
         "src/**/*",
     ]) + [
+        "//subdir:chdir.js",
         "//subdir:common_deps",
         "karma.conf.js",
         "tsconfig.spec.json",
