@@ -11,7 +11,7 @@ filegroup(
 )
 
 APPLICATION_DEPS = [
-    "//:common_deps",
+    "//subdir:common_deps",
     "@npm//@angular/cli",
     "@npm//@angular/core",
     "@npm//@angular/router",
@@ -22,7 +22,7 @@ APPLICATION_DEPS = [
     "@npm//zone.js",
     "@npm//tslib",
     "@npm//typescript",
-    "//projects/frontend-lib",
+    "//subdir/projects/frontend-lib",
 ]
 
 architect(
@@ -137,7 +137,7 @@ architect(
         "src/**/*",
         "e2e/src/**/*",
     ]) + [
-        "//:common_deps",
+        "//subdir:common_deps",
         "tsconfig.spec.json",
         "tsconfig.app.json",
         "tslint.json",

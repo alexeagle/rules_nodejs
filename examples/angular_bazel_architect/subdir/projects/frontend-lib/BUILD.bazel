@@ -19,7 +19,7 @@ architect(
             "src/test.ts",
         ],
     ) + [
-        "//:common_deps",
+        "//subdir:common_deps",
         "ng-package.js",
         "package.json",
         "tsconfig.lib.json",
@@ -41,7 +41,7 @@ architect_test(
     data = glob([
         "src/**/*",
     ]) + [
-        "//:common_deps",
+        "//subdir:common_deps",
         "karma.conf.js",
         "tsconfig.spec.json",
         "@npm//@types/jasmine",

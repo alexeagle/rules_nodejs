@@ -4,6 +4,7 @@
 workspace(
     # How this workspace would be referenced with absolute labels from another workspace
     name = "angular_bazel_architect",
+    managed_directories = {"@npm": ["subdir/node_modules"]},
 )
 
 # Install the nodejs "bootstrap" package
@@ -23,12 +24,12 @@ load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
 yarn_install(
     # Name this npm so that Bazel Label references look like @npm//package
     name = "npm",
-    data = ["//:patches/@angular-devkit+architect-cli+0.900.1.patch"],
-    package_json = "//:package.json",
+    data = ["//subdir:patches/@angular-devkit+architect-cli+0.900.1.patch"],
+    package_json = "//subdir:package.json",
     # Turn off symlink_node_modules here as it causes extreme flakiness on buildkite
     # macos CI with missing files in node_modules.
     # TODO: track down the root cause of the flakiness; it may be something to
     # do with how the Bazel team has setup their macos virtualization.
     symlink_node_modules = False,
-    yarn_lock = "//:yarn.lock",
+    yarn_lock = "//subdir:yarn.lock",
 )
