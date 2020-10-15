@@ -249,68 +249,31 @@
 <h2 id="cypress_repository">cypress_repository</h2>
 
 <pre>
-cypress_repository(<a href="#cypress_repository-name">name</a>, <a href="#cypress_repository-cypress_bin">cypress_bin</a>, <a href="#cypress_repository-fail_on_error">fail_on_error</a>, <a href="#cypress_repository-quiet">quiet</a>)
+cypress_repository(<a href="#cypress_repository-name">name</a>, <a href="#cypress_repository-cypress_bin">cypress_bin</a>, <a href="#cypress_repository-fail_on_error">fail_on_error</a>, <a href="#cypress_repository-quiet">quiet</a>, <a href="#cypress_repository-repo_mapping">repo_mapping</a>)
 </pre>
 
-<p><strong>ATTRIBUTES</strong></p>
+<h4 id="cypress_repository-name">name</h4>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Type</th>
-    <th>Mandatory</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="cypress_repository-name">
-        <td>name</td>
-        <td>
-                            A unique name for this repository.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#name">Name</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="cypress_repository-cypress_bin">
-        <td>cypress_bin</td>
-        <td>
-                            bazel target of the cypress binary
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>optional</td>
-        <td>
-            @npm//:node_modules/cypress/bin/cypress
-        </td>
-      </tr>
-            <tr id="cypress_repository-fail_on_error">
-        <td>fail_on_error</td>
-        <td>
-                            If the repository rule should allow errors
-                                </td>
-        <td>Boolean</td>
-        <td>optional</td>
-        <td>
-            True
-        </td>
-      </tr>
-            <tr id="cypress_repository-quiet">
-        <td>quiet</td>
-        <td>
-                            If stdout and stderr should be printed to the terminal
-                                </td>
-        <td>Boolean</td>
-        <td>optional</td>
-        <td>
-            True
-        </td>
-      </tr>
-        </tbody>
-</table>
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#name">Name</a>, mandatory</em>): A unique name for this repository.</p>
+
+<h4 id="cypress_repository-cypress_bin">cypress_bin</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></em>): bazel target of the cypress binary
+Defaults to <code>@npm//:node_modules/cypress/bin/cypress</code></p>
+
+<h4 id="cypress_repository-fail_on_error">fail_on_error</h4>
+
+<p>(<em>Boolean</em>): If the repository rule should allow errors
+Defaults to <code>True</code></p>
+
+<h4 id="cypress_repository-quiet">quiet</h4>
+
+<p>(<em>Boolean</em>): If stdout and stderr should be printed to the terminal
+Defaults to <code>True</code></p>
+
+<h4 id="cypress_repository-repo_mapping">repo_mapping</h4>
+
+<p>(<em><a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -&gt; String</a>, mandatory</em>): A dictionary from local repository name to global repository name. This allows controls over workspace dependency resolution for dependencies of this repository.&lt;p&gt;For example, an entry <code>"@foo": "@bar"</code> declares that, for any time this repository depends on <code>@foo</code> (such as a dependency on <code>@foo//some:target</code>, it should actually resolve that dependency within globally-declared <code>@bar</code> (<code>@bar//some:target</code>).</p>
 
 
       </div>
@@ -363,6 +326,7 @@ cypress_repository(<a href="#cypress_repository-name">name</a>, <a href="#cypres
 <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.0/anchor.min.js" type="text/javascript"></script>
 <script>
   // Automatically add anchors and links to all header elements that don't already have them.
+  anchors.options = { placement: 'left' };
   anchors.add();
 </script>
 

@@ -265,173 +265,95 @@ This is an advanced scenario you can use in place of the <code>npm_install</code
 
 <pre>
 node_repositories(<a href="#node_repositories-name">name</a>, <a href="#node_repositories-node_repositories">node_repositories</a>, <a href="#node_repositories-node_urls">node_urls</a>, <a href="#node_repositories-node_version">node_version</a>, <a href="#node_repositories-package_json">package_json</a>, <a href="#node_repositories-preserve_symlinks">preserve_symlinks</a>,
-                  <a href="#node_repositories-vendored_node">vendored_node</a>, <a href="#node_repositories-vendored_yarn">vendored_yarn</a>, <a href="#node_repositories-yarn_repositories">yarn_repositories</a>, <a href="#node_repositories-yarn_urls">yarn_urls</a>, <a href="#node_repositories-yarn_version">yarn_version</a>)
+                  <a href="#node_repositories-repo_mapping">repo_mapping</a>, <a href="#node_repositories-vendored_node">vendored_node</a>, <a href="#node_repositories-vendored_yarn">vendored_yarn</a>, <a href="#node_repositories-yarn_repositories">yarn_repositories</a>, <a href="#node_repositories-yarn_urls">yarn_urls</a>,
+                  <a href="#node_repositories-yarn_version">yarn_version</a>)
 </pre>
 
-<p><strong>ATTRIBUTES</strong></p>
+<h4 id="node_repositories-name">name</h4>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Type</th>
-    <th>Mandatory</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="node_repositories-name">
-        <td>name</td>
-        <td>
-                            A unique name for this repository.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#name">Name</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="node_repositories-node_repositories">
-        <td>node_repositories</td>
-        <td>
-                            Custom list of node repositories to use
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#name">Name</a>, mandatory</em>): A unique name for this repository.</p>
 
-A dictionary mapping NodeJS versions to sets of hosts and their corresponding (filename, strip_prefix, sha256) tuples.
-You should list a node binary for every platform users have, likely Mac, Windows, and Linux.
+<h4 id="node_repositories-node_repositories">node_repositories</h4>
 
-By default, if this attribute has no items, we'll use a list of all public NodeJS releases.
-                                </td>
-        <td><a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -&gt; List of strings</a></td>
-        <td>optional</td>
-        <td>
-            {}
-        </td>
-      </tr>
-            <tr id="node_repositories-node_urls">
-        <td>node_urls</td>
-        <td>
-                            custom list of URLs to use to download NodeJS
+<p>(<em><a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -&gt; List of strings</a></em>): Custom list of node repositories to use</p>
 
-Each entry is a template for downloading a node distribution.
+<p>A dictionary mapping NodeJS versions to sets of hosts and their corresponding (filename, strip_prefix, sha256) tuples.
+You should list a node binary for every platform users have, likely Mac, Windows, and Linux.</p>
 
-The <code>{version}</code> parameter is substituted with the <code>node_version</code> attribute,
+<p>By default, if this attribute has no items, we’ll use a list of all public NodeJS releases.
+Defaults to <code>{}</code></p>
+
+<h4 id="node_repositories-node_urls">node_urls</h4>
+
+<p>(<em>List of strings</em>): custom list of URLs to use to download NodeJS</p>
+
+<p>Each entry is a template for downloading a node distribution.</p>
+
+<p>The <code>{version}</code> parameter is substituted with the <code>node_version</code> attribute,
 and <code>{filename}</code> with the matching entry from the <code>node_repositories</code> attribute.
-                                </td>
-        <td>List of strings</td>
-        <td>optional</td>
-        <td>
-            ["https://mirror.bazel.build/nodejs.org/dist/v{version}/{filename}", "https://nodejs.org/dist/v{version}/{filename}"]
-        </td>
-      </tr>
-            <tr id="node_repositories-node_version">
-        <td>node_version</td>
-        <td>
-                            the specific version of NodeJS to install or, if vendored_node is specified, the vendored version of node
-                                </td>
-        <td>String</td>
-        <td>optional</td>
-        <td>
-            "12.13.0"
-        </td>
-      </tr>
-            <tr id="node_repositories-package_json">
-        <td>package_json</td>
-        <td>
-                            (ADVANCED, not recommended)
+Defaults to <code>["https://mirror.bazel.build/nodejs.org/dist/v{version}/{filename}", "https://nodejs.org/dist/v{version}/{filename}"]</code></p>
+
+<h4 id="node_repositories-node_version">node_version</h4>
+
+<p>(<em>String</em>): the specific version of NodeJS to install or, if vendored_node is specified, the vendored version of node
+Defaults to <code>"12.13.0"</code></p>
+
+<h4 id="node_repositories-package_json">package_json</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></em>): (ADVANCED, not recommended)
             a list of labels, which indicate the package.json files that will be installed
             when you manually run the package manager, e.g. with
             <code>bazel run @nodejs//:yarn_node_repositories</code> or <code>bazel run @nodejs//:npm_node_repositories install</code>.
             If you use bazel-managed dependencies, you should omit this attribute.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="node_repositories-preserve_symlinks">
-        <td>preserve_symlinks</td>
-        <td>
-                            Turn on --node_options=--preserve-symlinks for nodejs_binary and nodejs_test rules.
+Defaults to <code>[]</code></p>
 
-When this option is turned on, node will preserve the symlinked path for resolves instead of the default
+<h4 id="node_repositories-preserve_symlinks">preserve_symlinks</h4>
+
+<p>(<em>Boolean</em>): Turn on –node_options=–preserve-symlinks for nodejs_binary and nodejs_test rules.</p>
+
+<p>When this option is turned on, node will preserve the symlinked path for resolves instead of the default
 behavior of resolving to the real path. This means that all required files must be in be included in your
 runfiles as it prevents the default behavior of potentially resolving outside of the runfiles. For example,
 all required files need to be included in your node_modules filegroup. This option is desirable as it gives
 a stronger guarantee of hermeticity which is required for remote execution.
-                                </td>
-        <td>Boolean</td>
-        <td>optional</td>
-        <td>
-            True
-        </td>
-      </tr>
-            <tr id="node_repositories-vendored_node">
-        <td>vendored_node</td>
-        <td>
-                            the local path to a pre-installed NodeJS runtime.
+Defaults to <code>True</code></p>
 
-If set then also set node_version to the version that of node that is vendored.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>optional</td>
-        <td>
-            None
-        </td>
-      </tr>
-            <tr id="node_repositories-vendored_yarn">
-        <td>vendored_yarn</td>
-        <td>
-                            the local path to a pre-installed yarn tool
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>optional</td>
-        <td>
-            None
-        </td>
-      </tr>
-            <tr id="node_repositories-yarn_repositories">
-        <td>yarn_repositories</td>
-        <td>
-                            Custom list of yarn repositories to use.
+<h4 id="node_repositories-repo_mapping">repo_mapping</h4>
 
-Dictionary mapping Yarn versions to their corresponding (filename, strip_prefix, sha256) tuples.
+<p>(<em><a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -&gt; String</a>, mandatory</em>): A dictionary from local repository name to global repository name. This allows controls over workspace dependency resolution for dependencies of this repository.&lt;p&gt;For example, an entry <code>"@foo": "@bar"</code> declares that, for any time this repository depends on <code>@foo</code> (such as a dependency on <code>@foo//some:target</code>, it should actually resolve that dependency within globally-declared <code>@bar</code> (<code>@bar//some:target</code>).</p>
 
-By default, if this attribute has no items, we'll use a list of all public NodeJS releases.
-                                </td>
-        <td><a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -&gt; List of strings</a></td>
-        <td>optional</td>
-        <td>
-            {}
-        </td>
-      </tr>
-            <tr id="node_repositories-yarn_urls">
-        <td>yarn_urls</td>
-        <td>
-                            custom list of URLs to use to download Yarn
+<h4 id="node_repositories-vendored_node">vendored_node</h4>
 
-Each entry is a template, similar to the <code>node_urls</code> attribute, using <code>yarn_version</code> and <code>yarn_repositories</code> in the substitutions.
-                                </td>
-        <td>List of strings</td>
-        <td>optional</td>
-        <td>
-            ["https://mirror.bazel.build/github.com/yarnpkg/yarn/releases/download/v{version}/{filename}", "https://github.com/yarnpkg/yarn/releases/download/v{version}/{filename}"]
-        </td>
-      </tr>
-            <tr id="node_repositories-yarn_version">
-        <td>yarn_version</td>
-        <td>
-                            the specific version of Yarn to install
-                                </td>
-        <td>String</td>
-        <td>optional</td>
-        <td>
-            "1.19.1"
-        </td>
-      </tr>
-        </tbody>
-</table>
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></em>): the local path to a pre-installed NodeJS runtime.</p>
+
+<p>If set then also set node_version to the version that of node that is vendored.
+Defaults to <code>None</code></p>
+
+<h4 id="node_repositories-vendored_yarn">vendored_yarn</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></em>): the local path to a pre-installed yarn tool
+Defaults to <code>None</code></p>
+
+<h4 id="node_repositories-yarn_repositories">yarn_repositories</h4>
+
+<p>(<em><a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -&gt; List of strings</a></em>): Custom list of yarn repositories to use.</p>
+
+<p>Dictionary mapping Yarn versions to their corresponding (filename, strip_prefix, sha256) tuples.</p>
+
+<p>By default, if this attribute has no items, we’ll use a list of all public NodeJS releases.
+Defaults to <code>{}</code></p>
+
+<h4 id="node_repositories-yarn_urls">yarn_urls</h4>
+
+<p>(<em>List of strings</em>): custom list of URLs to use to download Yarn</p>
+
+<p>Each entry is a template, similar to the <code>node_urls</code> attribute, using <code>yarn_version</code> and <code>yarn_repositories</code> in the substitutions.
+Defaults to <code>["https://mirror.bazel.build/github.com/yarnpkg/yarn/releases/download/v{version}/{filename}", "https://github.com/yarnpkg/yarn/releases/download/v{version}/{filename}"]</code></p>
+
+<h4 id="node_repositories-yarn_version">yarn_version</h4>
+
+<p>(<em>String</em>): the specific version of Yarn to install
+Defaults to <code>"1.19.1"</code></p>
 
 <h2 id="nodejs_binary">nodejs_binary</h2>
 
@@ -442,83 +364,45 @@ nodejs_binary(<a href="#nodejs_binary-name">name</a>, <a href="#nodejs_binary-co
               <a href="#nodejs_binary-link_workspace_root">link_workspace_root</a>, <a href="#nodejs_binary-node_modules">node_modules</a>, <a href="#nodejs_binary-templated_args">templated_args</a>)
 </pre>
 
-<p><strong>ATTRIBUTES</strong></p>
+<h4 id="nodejs_binary-name">name</h4>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Type</th>
-    <th>Mandatory</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="nodejs_binary-name">
-        <td>name</td>
-        <td>
-                            A unique name for this target.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#name">Name</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="nodejs_binary-configuration_env_vars">
-        <td>configuration_env_vars</td>
-        <td>
-                            Pass these configuration environment variables to the resulting binary.
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#name">Name</a>, mandatory</em>): A unique name for this target.</p>
+
+<h4 id="nodejs_binary-configuration_env_vars">configuration_env_vars</h4>
+
+<p>(<em>List of strings</em>): Pass these configuration environment variables to the resulting binary.
         Chooses a subset of the configuration environment variables (taken from <code>ctx.var</code>), which also
-        includes anything specified via the --define flag.
+        includes anything specified via the –define flag.
         Note, this can lead to different outputs produced by this rule.
-                                </td>
-        <td>List of strings</td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="nodejs_binary-data">
-        <td>data</td>
-        <td>
-                            Runtime dependencies which may be loaded during execution.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="nodejs_binary-default_env_vars">
-        <td>default_env_vars</td>
-        <td>
-                            Default environment variables that are added to <code>configuration_env_vars</code>.
+Defaults to <code>[]</code></p>
 
-This is separate from the default of <code>configuration_env_vars</code> so that a user can set <code>configuration_env_vars</code>
-without losing the defaults that should be set in most cases.
+<h4 id="nodejs_binary-data">data</h4>
 
-The set of default  environment variables is:
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></em>): Runtime dependencies which may be loaded during execution.
+Defaults to <code>[]</code></p>
 
-- <code>VERBOSE_LOGS</code>: use by some rules &amp; tools to turn on debug output in their logs
-- <code>NODE_DEBUG</code>: used by node.js itself to print more logs
-- <code>RUNFILES_LIB_DEBUG</code>: print diagnostic message from Bazel runfiles.bash helper
-                                </td>
-        <td>List of strings</td>
-        <td>optional</td>
-        <td>
-            ["VERBOSE_LOGS", "NODE_DEBUG", "RUNFILES_LIB_DEBUG"]
-        </td>
-      </tr>
-            <tr id="nodejs_binary-entry_point">
-        <td>entry_point</td>
-        <td>
-                            The script which should be executed first, usually containing a main function.
+<h4 id="nodejs_binary-default_env_vars">default_env_vars</h4>
 
-If the entry JavaScript file belongs to the same package (as the BUILD file),
-you can simply reference it by its relative name to the package directory:
+<p>(<em>List of strings</em>): Default environment variables that are added to <code>configuration_env_vars</code>.</p>
 
+<p>This is separate from the default of <code>configuration_env_vars</code> so that a user can set <code>configuration_env_vars</code>
+without losing the defaults that should be set in most cases.</p>
+
+<p>The set of default  environment variables is:</p>
+
+<ul>
+  <li><code>VERBOSE_LOGS</code>: use by some rules &amp; tools to turn on debug output in their logs</li>
+  <li><code>NODE_DEBUG</code>: used by node.js itself to print more logs</li>
+  <li><code>RUNFILES_LIB_DEBUG</code>: print diagnostic message from Bazel runfiles.bash helper
+Defaults to <code>["VERBOSE_LOGS", "NODE_DEBUG", "RUNFILES_LIB_DEBUG"]</code></li>
+</ul>
+
+<h4 id="nodejs_binary-entry_point">entry_point</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">Label</a>, mandatory</em>): The script which should be executed first, usually containing a main function.</p>
+
+<p>If the entry JavaScript file belongs to the same package (as the BUILD file),
+you can simply reference it by its relative name to the package directory:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">nodejs_binary</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"my_binary"</span><span class="p">,</span>
@@ -526,10 +410,8 @@ you can simply reference it by its relative name to the package directory:
     <span class="n">entry_point</span> <span class="o">=</span> <span class="s">":file.js"</span><span class="p">,</span>
 <span class="p">)</span></code></pre></figure>
 
-
-You can specify the entry point as a typescript file so long as you also include
-the ts_library target in data:
-
+<p>You can specify the entry point as a typescript file so long as you also include
+the ts_library target in data:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">ts_library</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"main"</span><span class="p">,</span>
@@ -542,12 +424,10 @@ the ts_library target in data:
     <span class="n">entry_point</span> <span class="o">=</span> <span class="s">":main.ts"</span><span class="p">,</span>
 <span class="p">)</span></code></pre></figure>
 
+<p>The rule will use the corresponding <code>.js</code> output of the ts_library rule as the entry point.</p>
 
-The rule will use the corresponding <code>.js</code> output of the ts_library rule as the entry point.
-
-If the entry point target is a rule, it should produce a single JavaScript entry file that will be passed to the nodejs_binary rule.
-For example:
-
+<p>If the entry point target is a rule, it should produce a single JavaScript entry file that will be passed to the nodejs_binary rule.
+For example:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">filegroup</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"entry_file"</span><span class="p">,</span>
@@ -559,9 +439,7 @@ For example:
     <span class="n">entry_point</span> <span class="o">=</span> <span class="s">":entry_file"</span><span class="p">,</span>
 <span class="p">)</span></code></pre></figure>
 
-
-The entry_point can also be a label in another workspace:
-
+<p>The entry_point can also be a label in another workspace:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">nodejs_binary</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"history-server"</span><span class="p">,</span>
@@ -569,36 +447,21 @@ The entry_point can also be a label in another workspace:
     <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="s">"@npm//history-server"</span><span class="p">],</span>
 <span class="p">)</span></code></pre></figure>
 
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="nodejs_binary-link_workspace_root">
-        <td>link_workspace_root</td>
-        <td>
-                            Link the workspace root to the bin_dir to support absolute requires like 'my_wksp/path/to/file'.
-If source files need to be required then they can be copied to the bin_dir with copy_to_bin.
-                                </td>
-        <td>Boolean</td>
-        <td>optional</td>
-        <td>
-            False
-        </td>
-      </tr>
-            <tr id="nodejs_binary-node_modules">
-        <td>node_modules</td>
-        <td>
-                            The npm packages which should be available to <code>require()</code> during
-        execution.
+<h4 id="nodejs_binary-link_workspace_root">link_workspace_root</h4>
 
-This attribute is DEPRECATED. As of version 0.13.0 the recommended approach
+<p>(<em>Boolean</em>): Link the workspace root to the bin_dir to support absolute requires like ‘my_wksp/path/to/file’.
+If source files need to be required then they can be copied to the bin_dir with copy_to_bin.
+Defaults to <code>False</code></p>
+
+<h4 id="nodejs_binary-node_modules">node_modules</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></em>): The npm packages which should be available to <code>require()</code> during
+        execution.</p>
+
+<p>This attribute is DEPRECATED. As of version 0.13.0 the recommended approach
 to npm dependencies is to use fine grained npm dependencies which are setup
 with the <code>yarn_install</code> or <code>npm_install</code> rules. For example, in targets
-that used a <code>//:node_modules</code> filegroup,
-
+that used a <code>//:node_modules</code> filegroup,</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">nodejs_binary</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"my_binary"</span><span class="p">,</span>
@@ -606,12 +469,10 @@ that used a <code>//:node_modules</code> filegroup,
     <span class="n">node_modules</span> <span class="o">=</span> <span class="s">"//:node_modules"</span><span class="p">,</span>
 <span class="p">)</span></code></pre></figure>
 
-
-which specifies all files within the <code>//:node_modules</code> filegroup
+<p>which specifies all files within the <code>//:node_modules</code> filegroup
 to be inputs to the <code>my_binary</code>. Using fine grained npm dependencies,
 <code>my_binary</code> is defined with only the npm dependencies that are
-needed:
-
+needed:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">nodejs_binary</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"my_binary"</span><span class="p">,</span>
@@ -623,25 +484,23 @@ needed:
     <span class="p">],</span>
 <span class="p">)</span></code></pre></figure>
 
-
-In this case, only the <code>foo</code> and <code>bar</code> npm packages and their
+<p>In this case, only the <code>foo</code> and <code>bar</code> npm packages and their
 transitive deps are includes as inputs to the <code>my_binary</code> target
 which reduces the time required to setup the runfiles for this
-target (see https://github.com/bazelbuild/bazel/issues/5153).
+target (see https://github.com/bazelbuild/bazel/issues/5153).</p>
 
-The @npm external repository and the fine grained npm package
+<p>The @npm external repository and the fine grained npm package
 targets are setup using the <code>yarn_install</code> or <code>npm_install</code> rule
-in your WORKSPACE file:
+in your WORKSPACE file:</p>
 
-yarn_install(
-    name = "npm",
-    package_json = "//:package.json",
-    yarn_lock = "//:yarn.lock",
-)
+<p>yarn_install(
+    name = “npm”,
+    package_json = “//:package.json”,
+    yarn_lock = “//:yarn.lock”,
+)</p>
 
-For other rules such as <code>jasmine_node_test</code>, fine grained
-npm dependencies are specified in the <code>deps</code> attribute:
-
+<p>For other rules such as <code>jasmine_node_test</code>, fine grained
+npm dependencies are specified in the <code>deps</code> attribute:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">jasmine_node_test</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"my_test"</span><span class="p">,</span>
@@ -654,40 +513,36 @@ npm dependencies are specified in the <code>deps</code> attribute:
     <span class="p">],</span>
 <span class="p">)</span></code></pre></figure>
 
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>optional</td>
-        <td>
-            //:node_modules_none
-        </td>
-      </tr>
-            <tr id="nodejs_binary-templated_args">
-        <td>templated_args</td>
-        <td>
-                            Arguments which are passed to every execution of the program.
+<p>Defaults to <code>//:node_modules_none</code></p>
+
+<h4 id="nodejs_binary-templated_args">templated_args</h4>
+
+<p>(<em>List of strings</em>): Arguments which are passed to every execution of the program.
         To pass a node startup option, prepend it with <code>--node_options=</code>, e.g.
-        <code>--node_options=--preserve-symlinks</code>.
+        <code>--node_options=--preserve-symlinks</code>.</p>
 
-Subject to 'Make variable' substitution. See https://docs.bazel.build/versions/master/be/make-variables.html.
+<p>Subject to ‘Make variable’ substitution. See https://docs.bazel.build/versions/master/be/make-variables.html.</p>
 
-1. Subject to predefined source/output path variables substitutions.
+<ol>
+  <li>Subject to predefined source/output path variables substitutions.</li>
+</ol>
 
-The predefined variables <code>execpath</code>, <code>execpaths</code>, <code>rootpath</code>, <code>rootpaths</code>, <code>location</code>, and <code>locations</code> take
-label parameters (e.g. <code>$(execpath //foo:bar)</code>) and substitute the file paths denoted by that label.
+<p>The predefined variables <code>execpath</code>, <code>execpaths</code>, <code>rootpath</code>, <code>rootpaths</code>, <code>location</code>, and <code>locations</code> take
+label parameters (e.g. <code>$(execpath //foo:bar)</code>) and substitute the file paths denoted by that label.</p>
 
-See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_label_variables for more info.
+<p>See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_label_variables for more info.</p>
 
-NB: This $(location) substition returns the manifest file path which differs from the *_binary &amp; *_test
+<p>NB: This $(location) substition returns the manifest file path which differs from the *_binary &amp; *_test
 args and genrule bazel substitions. This will be fixed in a future major release.
 See docs string of <code>expand_location_into_runfiles</code> macro in <code>internal/common/expand_into_runfiles.bzl</code>
-for more info.
+for more info.</p>
 
-The recommended approach is to now use <code>$(rootpath)</code> where you previously used $(location).
+<p>The recommended approach is to now use <code>$(rootpath)</code> where you previously used $(location).</p>
 
-To get from a <code>$(rootpath)</code> to the absolute path that <code>$$(rlocation $(location))</code> returned you can either use
-<code>$$(rlocation $(rootpath))</code> if you are in the <code>templated_args</code> of a <code>nodejs_binary</code> or <code>nodejs_test</code>:
+<p>To get from a <code>$(rootpath)</code> to the absolute path that <code>$$(rlocation $(location))</code> returned you can either use
+<code>$$(rlocation $(rootpath))</code> if you are in the <code>templated_args</code> of a <code>nodejs_binary</code> or <code>nodejs_test</code>:</p>
 
-BUILD.bazel:
+<p>BUILD.bazel:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">nodejs_test</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"my_test"</span><span class="p">,</span>
@@ -695,11 +550,10 @@ BUILD.bazel:
     <span class="n">templated_args</span> <span class="o">=</span> <span class="p">[</span><span class="s">"--node_options=--require=$$(rlocation $(rootpath :bootstrap.js))"</span><span class="p">],</span>
 <span class="p">)</span></code></pre></figure>
 
+<p>or if you’re in the context of a .js script you can pass the $(rootpath) as an argument to the script
+and use the javascript runfiles helper to resolve to the absolute path:</p>
 
-or if you're in the context of a .js script you can pass the $(rootpath) as an argument to the script
-and use the javascript runfiles helper to resolve to the absolute path:
-
-BUILD.bazel:
+<p>BUILD.bazel:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">nodejs_test</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"my_test"</span><span class="p">,</span>
@@ -708,47 +562,39 @@ BUILD.bazel:
     <span class="n">templated_args</span> <span class="o">=</span> <span class="p">[</span><span class="s">"$(rootpath :some_file)"</span><span class="p">],</span>
 <span class="p">)</span></code></pre></figure>
 
-
-my_test.js
+<p>my_test.js</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">const</span> <span class="n">runfiles</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span><span class="n">process</span><span class="p">.</span><span class="n">env</span><span class="p">[</span><span class="s">'BAZEL_NODE_RUNFILES_HELPER'</span><span class="p">]);</span>
 <span class="n">const</span> <span class="n">args</span> <span class="o">=</span> <span class="n">process</span><span class="p">.</span><span class="n">argv</span><span class="p">.</span><span class="nb">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
 <span class="n">const</span> <span class="n">some_file</span> <span class="o">=</span> <span class="n">runfiles</span><span class="p">.</span><span class="n">resolveWorkspaceRelative</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span></code></pre></figure>
 
+<p>NB: Bazel will error if it sees the single dollar sign $(rlocation path) in <code>templated_args</code> as it will try to
+expand <code>$(rlocation)</code> since we now expand predefined &amp; custom “make” variables such as <code>$(COMPILATION_MODE)</code>,
+<code>$(BINDIR)</code> &amp; <code>$(TARGET_CPU)</code> using <code>ctx.expand_make_variables</code>. See https://docs.bazel.build/versions/master/be/make-variables.html.</p>
 
-NB: Bazel will error if it sees the single dollar sign $(rlocation path) in <code>templated_args</code> as it will try to
-expand <code>$(rlocation)</code> since we now expand predefined &amp; custom "make" variables such as <code>$(COMPILATION_MODE)</code>,
-<code>$(BINDIR)</code> &amp; <code>$(TARGET_CPU)</code> using <code>ctx.expand_make_variables</code>. See https://docs.bazel.build/versions/master/be/make-variables.html.
-
-To prevent expansion of <code>$(rlocation)</code> write it as <code>$$(rlocation)</code>. Bazel understands <code>$$</code> to be
+<p>To prevent expansion of <code>$(rlocation)</code> write it as <code>$$(rlocation)</code>. Bazel understands <code>$$</code> to be
 the string literal <code>$</code> and the expansion results in <code>$(rlocation)</code> being passed as an arg instead
 of being expanded. <code>$(rlocation)</code> is then evaluated by the bash node launcher script and it calls
 the <code>rlocation</code> function in the runfiles.bash helper. For example, the templated arg
 <code>$$(rlocation $(rootpath //:some_file))</code> is expanded by Bazel to <code>$(rlocation ./some_file)</code> which
 is then converted in bash to the absolute path of <code>//:some_file</code> in runfiles by the runfiles.bash helper
-before being passed as an argument to the program.
+before being passed as an argument to the program.</p>
 
-NB: nodejs_binary and nodejs_test will preserve the legacy behavior of <code>$(rlocation)</code> so users don't
-need to update to <code>$$(rlocation)</code>. This may be changed in the future.
+<p>NB: nodejs_binary and nodejs_test will preserve the legacy behavior of <code>$(rlocation)</code> so users don’t
+need to update to <code>$$(rlocation)</code>. This may be changed in the future.</p>
 
-2. Subject to predefined variables &amp; custom variable substitutions.
+<ol>
+  <li>Subject to predefined variables &amp; custom variable substitutions.</li>
+</ol>
 
-Predefined "Make" variables such as $(COMPILATION_MODE) and $(TARGET_CPU) are expanded.
-See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_variables.
+<p>Predefined “Make” variables such as $(COMPILATION_MODE) and $(TARGET_CPU) are expanded.
+See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_variables.</p>
 
-Custom variables are also expanded including variables set through the Bazel CLI with --define=SOME_VAR=SOME_VALUE.
-See https://docs.bazel.build/versions/master/be/make-variables.html#custom_variables.
+<p>Custom variables are also expanded including variables set through the Bazel CLI with –define=SOME_VAR=SOME_VALUE.
+See https://docs.bazel.build/versions/master/be/make-variables.html#custom_variables.</p>
 
-Predefined genrule variables are not supported in this context.
-                                </td>
-        <td>List of strings</td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-        </tbody>
-</table>
+<p>Predefined genrule variables are not supported in this context.
+Defaults to <code>[]</code></p>
 
 <h2 id="nodejs_test">nodejs_test</h2>
 
@@ -785,83 +631,45 @@ nodejs_test(<a href="#nodejs_test-name">name</a>, <a href="#nodejs_test-configur
             <a href="#nodejs_test-link_workspace_root">link_workspace_root</a>, <a href="#nodejs_test-node_modules">node_modules</a>, <a href="#nodejs_test-templated_args">templated_args</a>)
 </pre>
 
-<p><strong>ATTRIBUTES</strong></p>
+<h4 id="nodejs_test-name">name</h4>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Type</th>
-    <th>Mandatory</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="nodejs_test-name">
-        <td>name</td>
-        <td>
-                            A unique name for this target.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#name">Name</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="nodejs_test-configuration_env_vars">
-        <td>configuration_env_vars</td>
-        <td>
-                            Pass these configuration environment variables to the resulting binary.
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#name">Name</a>, mandatory</em>): A unique name for this target.</p>
+
+<h4 id="nodejs_test-configuration_env_vars">configuration_env_vars</h4>
+
+<p>(<em>List of strings</em>): Pass these configuration environment variables to the resulting binary.
         Chooses a subset of the configuration environment variables (taken from <code>ctx.var</code>), which also
-        includes anything specified via the --define flag.
+        includes anything specified via the –define flag.
         Note, this can lead to different outputs produced by this rule.
-                                </td>
-        <td>List of strings</td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="nodejs_test-data">
-        <td>data</td>
-        <td>
-                            Runtime dependencies which may be loaded during execution.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="nodejs_test-default_env_vars">
-        <td>default_env_vars</td>
-        <td>
-                            Default environment variables that are added to <code>configuration_env_vars</code>.
+Defaults to <code>[]</code></p>
 
-This is separate from the default of <code>configuration_env_vars</code> so that a user can set <code>configuration_env_vars</code>
-without losing the defaults that should be set in most cases.
+<h4 id="nodejs_test-data">data</h4>
 
-The set of default  environment variables is:
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></em>): Runtime dependencies which may be loaded during execution.
+Defaults to <code>[]</code></p>
 
-- <code>VERBOSE_LOGS</code>: use by some rules &amp; tools to turn on debug output in their logs
-- <code>NODE_DEBUG</code>: used by node.js itself to print more logs
-- <code>RUNFILES_LIB_DEBUG</code>: print diagnostic message from Bazel runfiles.bash helper
-                                </td>
-        <td>List of strings</td>
-        <td>optional</td>
-        <td>
-            ["VERBOSE_LOGS", "NODE_DEBUG", "RUNFILES_LIB_DEBUG"]
-        </td>
-      </tr>
-            <tr id="nodejs_test-entry_point">
-        <td>entry_point</td>
-        <td>
-                            The script which should be executed first, usually containing a main function.
+<h4 id="nodejs_test-default_env_vars">default_env_vars</h4>
 
-If the entry JavaScript file belongs to the same package (as the BUILD file),
-you can simply reference it by its relative name to the package directory:
+<p>(<em>List of strings</em>): Default environment variables that are added to <code>configuration_env_vars</code>.</p>
 
+<p>This is separate from the default of <code>configuration_env_vars</code> so that a user can set <code>configuration_env_vars</code>
+without losing the defaults that should be set in most cases.</p>
+
+<p>The set of default  environment variables is:</p>
+
+<ul>
+  <li><code>VERBOSE_LOGS</code>: use by some rules &amp; tools to turn on debug output in their logs</li>
+  <li><code>NODE_DEBUG</code>: used by node.js itself to print more logs</li>
+  <li><code>RUNFILES_LIB_DEBUG</code>: print diagnostic message from Bazel runfiles.bash helper
+Defaults to <code>["VERBOSE_LOGS", "NODE_DEBUG", "RUNFILES_LIB_DEBUG"]</code></li>
+</ul>
+
+<h4 id="nodejs_test-entry_point">entry_point</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">Label</a>, mandatory</em>): The script which should be executed first, usually containing a main function.</p>
+
+<p>If the entry JavaScript file belongs to the same package (as the BUILD file),
+you can simply reference it by its relative name to the package directory:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">nodejs_binary</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"my_binary"</span><span class="p">,</span>
@@ -869,10 +677,8 @@ you can simply reference it by its relative name to the package directory:
     <span class="n">entry_point</span> <span class="o">=</span> <span class="s">":file.js"</span><span class="p">,</span>
 <span class="p">)</span></code></pre></figure>
 
-
-You can specify the entry point as a typescript file so long as you also include
-the ts_library target in data:
-
+<p>You can specify the entry point as a typescript file so long as you also include
+the ts_library target in data:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">ts_library</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"main"</span><span class="p">,</span>
@@ -885,12 +691,10 @@ the ts_library target in data:
     <span class="n">entry_point</span> <span class="o">=</span> <span class="s">":main.ts"</span><span class="p">,</span>
 <span class="p">)</span></code></pre></figure>
 
+<p>The rule will use the corresponding <code>.js</code> output of the ts_library rule as the entry point.</p>
 
-The rule will use the corresponding <code>.js</code> output of the ts_library rule as the entry point.
-
-If the entry point target is a rule, it should produce a single JavaScript entry file that will be passed to the nodejs_binary rule.
-For example:
-
+<p>If the entry point target is a rule, it should produce a single JavaScript entry file that will be passed to the nodejs_binary rule.
+For example:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">filegroup</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"entry_file"</span><span class="p">,</span>
@@ -902,9 +706,7 @@ For example:
     <span class="n">entry_point</span> <span class="o">=</span> <span class="s">":entry_file"</span><span class="p">,</span>
 <span class="p">)</span></code></pre></figure>
 
-
-The entry_point can also be a label in another workspace:
-
+<p>The entry_point can also be a label in another workspace:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">nodejs_binary</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"history-server"</span><span class="p">,</span>
@@ -912,47 +714,26 @@ The entry_point can also be a label in another workspace:
     <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="s">"@npm//history-server"</span><span class="p">],</span>
 <span class="p">)</span></code></pre></figure>
 
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="nodejs_test-expected_exit_code">
-        <td>expected_exit_code</td>
-        <td>
-                            The expected exit code for the test. Defaults to 0.
-                                </td>
-        <td>Integer</td>
-        <td>optional</td>
-        <td>
-            0
-        </td>
-      </tr>
-            <tr id="nodejs_test-link_workspace_root">
-        <td>link_workspace_root</td>
-        <td>
-                            Link the workspace root to the bin_dir to support absolute requires like 'my_wksp/path/to/file'.
-If source files need to be required then they can be copied to the bin_dir with copy_to_bin.
-                                </td>
-        <td>Boolean</td>
-        <td>optional</td>
-        <td>
-            False
-        </td>
-      </tr>
-            <tr id="nodejs_test-node_modules">
-        <td>node_modules</td>
-        <td>
-                            The npm packages which should be available to <code>require()</code> during
-        execution.
+<h4 id="nodejs_test-expected_exit_code">expected_exit_code</h4>
 
-This attribute is DEPRECATED. As of version 0.13.0 the recommended approach
+<p>(<em>Integer</em>): The expected exit code for the test. Defaults to 0.
+Defaults to <code>0</code></p>
+
+<h4 id="nodejs_test-link_workspace_root">link_workspace_root</h4>
+
+<p>(<em>Boolean</em>): Link the workspace root to the bin_dir to support absolute requires like ‘my_wksp/path/to/file’.
+If source files need to be required then they can be copied to the bin_dir with copy_to_bin.
+Defaults to <code>False</code></p>
+
+<h4 id="nodejs_test-node_modules">node_modules</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></em>): The npm packages which should be available to <code>require()</code> during
+        execution.</p>
+
+<p>This attribute is DEPRECATED. As of version 0.13.0 the recommended approach
 to npm dependencies is to use fine grained npm dependencies which are setup
 with the <code>yarn_install</code> or <code>npm_install</code> rules. For example, in targets
-that used a <code>//:node_modules</code> filegroup,
-
+that used a <code>//:node_modules</code> filegroup,</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">nodejs_binary</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"my_binary"</span><span class="p">,</span>
@@ -960,12 +741,10 @@ that used a <code>//:node_modules</code> filegroup,
     <span class="n">node_modules</span> <span class="o">=</span> <span class="s">"//:node_modules"</span><span class="p">,</span>
 <span class="p">)</span></code></pre></figure>
 
-
-which specifies all files within the <code>//:node_modules</code> filegroup
+<p>which specifies all files within the <code>//:node_modules</code> filegroup
 to be inputs to the <code>my_binary</code>. Using fine grained npm dependencies,
 <code>my_binary</code> is defined with only the npm dependencies that are
-needed:
-
+needed:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">nodejs_binary</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"my_binary"</span><span class="p">,</span>
@@ -977,25 +756,23 @@ needed:
     <span class="p">],</span>
 <span class="p">)</span></code></pre></figure>
 
-
-In this case, only the <code>foo</code> and <code>bar</code> npm packages and their
+<p>In this case, only the <code>foo</code> and <code>bar</code> npm packages and their
 transitive deps are includes as inputs to the <code>my_binary</code> target
 which reduces the time required to setup the runfiles for this
-target (see https://github.com/bazelbuild/bazel/issues/5153).
+target (see https://github.com/bazelbuild/bazel/issues/5153).</p>
 
-The @npm external repository and the fine grained npm package
+<p>The @npm external repository and the fine grained npm package
 targets are setup using the <code>yarn_install</code> or <code>npm_install</code> rule
-in your WORKSPACE file:
+in your WORKSPACE file:</p>
 
-yarn_install(
-    name = "npm",
-    package_json = "//:package.json",
-    yarn_lock = "//:yarn.lock",
-)
+<p>yarn_install(
+    name = “npm”,
+    package_json = “//:package.json”,
+    yarn_lock = “//:yarn.lock”,
+)</p>
 
-For other rules such as <code>jasmine_node_test</code>, fine grained
-npm dependencies are specified in the <code>deps</code> attribute:
-
+<p>For other rules such as <code>jasmine_node_test</code>, fine grained
+npm dependencies are specified in the <code>deps</code> attribute:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">jasmine_node_test</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"my_test"</span><span class="p">,</span>
@@ -1008,40 +785,36 @@ npm dependencies are specified in the <code>deps</code> attribute:
     <span class="p">],</span>
 <span class="p">)</span></code></pre></figure>
 
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>optional</td>
-        <td>
-            //:node_modules_none
-        </td>
-      </tr>
-            <tr id="nodejs_test-templated_args">
-        <td>templated_args</td>
-        <td>
-                            Arguments which are passed to every execution of the program.
+<p>Defaults to <code>//:node_modules_none</code></p>
+
+<h4 id="nodejs_test-templated_args">templated_args</h4>
+
+<p>(<em>List of strings</em>): Arguments which are passed to every execution of the program.
         To pass a node startup option, prepend it with <code>--node_options=</code>, e.g.
-        <code>--node_options=--preserve-symlinks</code>.
+        <code>--node_options=--preserve-symlinks</code>.</p>
 
-Subject to 'Make variable' substitution. See https://docs.bazel.build/versions/master/be/make-variables.html.
+<p>Subject to ‘Make variable’ substitution. See https://docs.bazel.build/versions/master/be/make-variables.html.</p>
 
-1. Subject to predefined source/output path variables substitutions.
+<ol>
+  <li>Subject to predefined source/output path variables substitutions.</li>
+</ol>
 
-The predefined variables <code>execpath</code>, <code>execpaths</code>, <code>rootpath</code>, <code>rootpaths</code>, <code>location</code>, and <code>locations</code> take
-label parameters (e.g. <code>$(execpath //foo:bar)</code>) and substitute the file paths denoted by that label.
+<p>The predefined variables <code>execpath</code>, <code>execpaths</code>, <code>rootpath</code>, <code>rootpaths</code>, <code>location</code>, and <code>locations</code> take
+label parameters (e.g. <code>$(execpath //foo:bar)</code>) and substitute the file paths denoted by that label.</p>
 
-See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_label_variables for more info.
+<p>See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_label_variables for more info.</p>
 
-NB: This $(location) substition returns the manifest file path which differs from the *_binary &amp; *_test
+<p>NB: This $(location) substition returns the manifest file path which differs from the *_binary &amp; *_test
 args and genrule bazel substitions. This will be fixed in a future major release.
 See docs string of <code>expand_location_into_runfiles</code> macro in <code>internal/common/expand_into_runfiles.bzl</code>
-for more info.
+for more info.</p>
 
-The recommended approach is to now use <code>$(rootpath)</code> where you previously used $(location).
+<p>The recommended approach is to now use <code>$(rootpath)</code> where you previously used $(location).</p>
 
-To get from a <code>$(rootpath)</code> to the absolute path that <code>$$(rlocation $(location))</code> returned you can either use
-<code>$$(rlocation $(rootpath))</code> if you are in the <code>templated_args</code> of a <code>nodejs_binary</code> or <code>nodejs_test</code>:
+<p>To get from a <code>$(rootpath)</code> to the absolute path that <code>$$(rlocation $(location))</code> returned you can either use
+<code>$$(rlocation $(rootpath))</code> if you are in the <code>templated_args</code> of a <code>nodejs_binary</code> or <code>nodejs_test</code>:</p>
 
-BUILD.bazel:
+<p>BUILD.bazel:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">nodejs_test</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"my_test"</span><span class="p">,</span>
@@ -1049,11 +822,10 @@ BUILD.bazel:
     <span class="n">templated_args</span> <span class="o">=</span> <span class="p">[</span><span class="s">"--node_options=--require=$$(rlocation $(rootpath :bootstrap.js))"</span><span class="p">],</span>
 <span class="p">)</span></code></pre></figure>
 
+<p>or if you’re in the context of a .js script you can pass the $(rootpath) as an argument to the script
+and use the javascript runfiles helper to resolve to the absolute path:</p>
 
-or if you're in the context of a .js script you can pass the $(rootpath) as an argument to the script
-and use the javascript runfiles helper to resolve to the absolute path:
-
-BUILD.bazel:
+<p>BUILD.bazel:</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">nodejs_test</span><span class="p">(</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s">"my_test"</span><span class="p">,</span>
@@ -1062,47 +834,39 @@ BUILD.bazel:
     <span class="n">templated_args</span> <span class="o">=</span> <span class="p">[</span><span class="s">"$(rootpath :some_file)"</span><span class="p">],</span>
 <span class="p">)</span></code></pre></figure>
 
-
-my_test.js
+<p>my_test.js</p>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">const</span> <span class="n">runfiles</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span><span class="n">process</span><span class="p">.</span><span class="n">env</span><span class="p">[</span><span class="s">'BAZEL_NODE_RUNFILES_HELPER'</span><span class="p">]);</span>
 <span class="n">const</span> <span class="n">args</span> <span class="o">=</span> <span class="n">process</span><span class="p">.</span><span class="n">argv</span><span class="p">.</span><span class="nb">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
 <span class="n">const</span> <span class="n">some_file</span> <span class="o">=</span> <span class="n">runfiles</span><span class="p">.</span><span class="n">resolveWorkspaceRelative</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span></code></pre></figure>
 
+<p>NB: Bazel will error if it sees the single dollar sign $(rlocation path) in <code>templated_args</code> as it will try to
+expand <code>$(rlocation)</code> since we now expand predefined &amp; custom “make” variables such as <code>$(COMPILATION_MODE)</code>,
+<code>$(BINDIR)</code> &amp; <code>$(TARGET_CPU)</code> using <code>ctx.expand_make_variables</code>. See https://docs.bazel.build/versions/master/be/make-variables.html.</p>
 
-NB: Bazel will error if it sees the single dollar sign $(rlocation path) in <code>templated_args</code> as it will try to
-expand <code>$(rlocation)</code> since we now expand predefined &amp; custom "make" variables such as <code>$(COMPILATION_MODE)</code>,
-<code>$(BINDIR)</code> &amp; <code>$(TARGET_CPU)</code> using <code>ctx.expand_make_variables</code>. See https://docs.bazel.build/versions/master/be/make-variables.html.
-
-To prevent expansion of <code>$(rlocation)</code> write it as <code>$$(rlocation)</code>. Bazel understands <code>$$</code> to be
+<p>To prevent expansion of <code>$(rlocation)</code> write it as <code>$$(rlocation)</code>. Bazel understands <code>$$</code> to be
 the string literal <code>$</code> and the expansion results in <code>$(rlocation)</code> being passed as an arg instead
 of being expanded. <code>$(rlocation)</code> is then evaluated by the bash node launcher script and it calls
 the <code>rlocation</code> function in the runfiles.bash helper. For example, the templated arg
 <code>$$(rlocation $(rootpath //:some_file))</code> is expanded by Bazel to <code>$(rlocation ./some_file)</code> which
 is then converted in bash to the absolute path of <code>//:some_file</code> in runfiles by the runfiles.bash helper
-before being passed as an argument to the program.
+before being passed as an argument to the program.</p>
 
-NB: nodejs_binary and nodejs_test will preserve the legacy behavior of <code>$(rlocation)</code> so users don't
-need to update to <code>$$(rlocation)</code>. This may be changed in the future.
+<p>NB: nodejs_binary and nodejs_test will preserve the legacy behavior of <code>$(rlocation)</code> so users don’t
+need to update to <code>$$(rlocation)</code>. This may be changed in the future.</p>
 
-2. Subject to predefined variables &amp; custom variable substitutions.
+<ol>
+  <li>Subject to predefined variables &amp; custom variable substitutions.</li>
+</ol>
 
-Predefined "Make" variables such as $(COMPILATION_MODE) and $(TARGET_CPU) are expanded.
-See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_variables.
+<p>Predefined “Make” variables such as $(COMPILATION_MODE) and $(TARGET_CPU) are expanded.
+See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_variables.</p>
 
-Custom variables are also expanded including variables set through the Bazel CLI with --define=SOME_VAR=SOME_VALUE.
-See https://docs.bazel.build/versions/master/be/make-variables.html#custom_variables.
+<p>Custom variables are also expanded including variables set through the Bazel CLI with –define=SOME_VAR=SOME_VALUE.
+See https://docs.bazel.build/versions/master/be/make-variables.html#custom_variables.</p>
 
-Predefined genrule variables are not supported in this context.
-                                </td>
-        <td>List of strings</td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-        </tbody>
-</table>
+<p>Predefined genrule variables are not supported in this context.
+Defaults to <code>[]</code></p>
 
 <h2 id="npm_install">npm_install</h2>
 
@@ -1114,205 +878,120 @@ check if yarn is being run by the <code>npm_install</code> repository rule.</p>
 
 <pre>
 npm_install(<a href="#npm_install-name">name</a>, <a href="#npm_install-args">args</a>, <a href="#npm_install-data">data</a>, <a href="#npm_install-environment">environment</a>, <a href="#npm_install-included_files">included_files</a>, <a href="#npm_install-manual_build_file_contents">manual_build_file_contents</a>, <a href="#npm_install-package_json">package_json</a>,
-            <a href="#npm_install-package_lock_json">package_lock_json</a>, <a href="#npm_install-quiet">quiet</a>, <a href="#npm_install-strict_visibility">strict_visibility</a>, <a href="#npm_install-symlink_node_modules">symlink_node_modules</a>, <a href="#npm_install-timeout">timeout</a>)
+            <a href="#npm_install-package_lock_json">package_lock_json</a>, <a href="#npm_install-quiet">quiet</a>, <a href="#npm_install-repo_mapping">repo_mapping</a>, <a href="#npm_install-strict_visibility">strict_visibility</a>, <a href="#npm_install-symlink_node_modules">symlink_node_modules</a>, <a href="#npm_install-timeout">timeout</a>)
 </pre>
 
-<p><strong>ATTRIBUTES</strong></p>
+<h4 id="npm_install-name">name</h4>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Type</th>
-    <th>Mandatory</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="npm_install-name">
-        <td>name</td>
-        <td>
-                            A unique name for this repository.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#name">Name</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="npm_install-args">
-        <td>args</td>
-        <td>
-                            Arguments passed to npm install.
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#name">Name</a>, mandatory</em>): A unique name for this repository.</p>
 
-See npm CLI docs https://docs.npmjs.com/cli/install.html for complete list of supported arguments.
-                                </td>
-        <td>List of strings</td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="npm_install-data">
-        <td>data</td>
-        <td>
-                            Data files required by this rule.
+<h4 id="npm_install-args">args</h4>
 
-If symlink_node_modules is True, this attribute is optional since the package manager
+<p>(<em>List of strings</em>): Arguments passed to npm install.</p>
+
+<p>See npm CLI docs https://docs.npmjs.com/cli/install.html for complete list of supported arguments.
+Defaults to <code>[]</code></p>
+
+<h4 id="npm_install-data">data</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></em>): Data files required by this rule.</p>
+
+<p>If symlink_node_modules is True, this attribute is optional since the package manager
 will run in your workspace folder. It is recommended, however, that all files that the
 package manager depends on, such as <code>.rc</code> files or files used in <code>postinstall</code>, are added
 symlink_node_modules is True so that the repository rule is rerun when any of these files
-change.
+change.</p>
 
-If symlink_node_modules is False, the package manager is run in the bazel external
+<p>If symlink_node_modules is False, the package manager is run in the bazel external
 repository so all files that the package manager depends on must be listed.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="npm_install-environment">
-        <td>environment</td>
-        <td>
-                            Environment variables to set before calling the package manager.
-                                </td>
-        <td><a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -&gt; String</a></td>
-        <td>optional</td>
-        <td>
-            {}
-        </td>
-      </tr>
-            <tr id="npm_install-included_files">
-        <td>included_files</td>
-        <td>
-                            List of file extensions to be included in the npm package targets.
+Defaults to <code>[]</code></p>
 
-For example, [".js", ".d.ts", ".proto", ".json", ""].
+<h4 id="npm_install-environment">environment</h4>
 
-This option is useful to limit the number of files that are inputs
+<p>(<em><a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -&gt; String</a></em>): Environment variables to set before calling the package manager.
+Defaults to <code>{}</code></p>
+
+<h4 id="npm_install-included_files">included_files</h4>
+
+<p>(<em>List of strings</em>): List of file extensions to be included in the npm package targets.</p>
+
+<p>For example, [“.js”, “.d.ts”, “.proto”, “.json”, “”].</p>
+
+<p>This option is useful to limit the number of files that are inputs
 to actions that depend on npm package targets. See
-https://github.com/bazelbuild/bazel/issues/5153.
+https://github.com/bazelbuild/bazel/issues/5153.</p>
 
-If set to an empty list then all files are included in the package targets.
+<p>If set to an empty list then all files are included in the package targets.
 If set to a list of extensions, only files with matching extensions are
 included in the package targets. An empty string in the list is a special
 string that denotes that files with no extensions such as <code>README</code> should
-be included in the package targets.
+be included in the package targets.</p>
 
-This attribute applies to both the coarse <code>@wksp//:node_modules</code> target
+<p>This attribute applies to both the coarse <code>@wksp//:node_modules</code> target
 as well as the fine grained targets such as <code>@wksp//foo</code>.
-                                </td>
-        <td>List of strings</td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="npm_install-manual_build_file_contents">
-        <td>manual_build_file_contents</td>
-        <td>
-                            Experimental attribute that can be used to override the generated BUILD.bazel file and set its contents manually.
+Defaults to <code>[]</code></p>
 
-Can be used to work-around a bazel performance issue if the
+<h4 id="npm_install-manual_build_file_contents">manual_build_file_contents</h4>
+
+<p>(<em>String</em>): Experimental attribute that can be used to override the generated BUILD.bazel file and set its contents manually.</p>
+
+<p>Can be used to work-around a bazel performance issue if the
 default <code>@wksp//:node_modules</code> target has too many files in it.
 See https://github.com/bazelbuild/bazel/issues/5153. If
 you are running into performance issues due to a large
 node_modules target it is recommended to switch to using
 fine grained npm dependencies.
-                                </td>
-        <td>String</td>
-        <td>optional</td>
-        <td>
-            ""
-        </td>
-      </tr>
-            <tr id="npm_install-package_json">
-        <td>package_json</td>
-        <td>
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="npm_install-package_lock_json">
-        <td>package_lock_json</td>
-        <td>
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="npm_install-quiet">
-        <td>quiet</td>
-        <td>
-                            If stdout and stderr should be printed to the terminal.
-                                </td>
-        <td>Boolean</td>
-        <td>optional</td>
-        <td>
-            True
-        </td>
-      </tr>
-            <tr id="npm_install-strict_visibility">
-        <td>strict_visibility</td>
-        <td>
-                            Turn on stricter visibility for generated BUILD.bazel files
+Defaults to <code>""</code></p>
 
-When enabled, only dependencies within the given <code>package.json</code> file are given public visibility.
+<h4 id="npm_install-package_json">package_json</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">Label</a>, mandatory</em>)</p>
+
+<h4 id="npm_install-package_lock_json">package_lock_json</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">Label</a>, mandatory</em>)</p>
+
+<h4 id="npm_install-quiet">quiet</h4>
+
+<p>(<em>Boolean</em>): If stdout and stderr should be printed to the terminal.
+Defaults to <code>True</code></p>
+
+<h4 id="npm_install-repo_mapping">repo_mapping</h4>
+
+<p>(<em><a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -&gt; String</a>, mandatory</em>): A dictionary from local repository name to global repository name. This allows controls over workspace dependency resolution for dependencies of this repository.&lt;p&gt;For example, an entry <code>"@foo": "@bar"</code> declares that, for any time this repository depends on <code>@foo</code> (such as a dependency on <code>@foo//some:target</code>, it should actually resolve that dependency within globally-declared <code>@bar</code> (<code>@bar//some:target</code>).</p>
+
+<h4 id="npm_install-strict_visibility">strict_visibility</h4>
+
+<p>(<em>Boolean</em>): Turn on stricter visibility for generated BUILD.bazel files</p>
+
+<p>When enabled, only dependencies within the given <code>package.json</code> file are given public visibility.
 All transitive dependencies are given limited visibility, enforcing that all direct dependencies are
-listed in the <code>package.json</code> file.
+listed in the <code>package.json</code> file.</p>
 
-Currently the default is set <code>False</code>, but will likely be flipped <code>True</code> in rules_nodejs 3.0.0
-                                </td>
-        <td>Boolean</td>
-        <td>optional</td>
-        <td>
-            False
-        </td>
-      </tr>
-            <tr id="npm_install-symlink_node_modules">
-        <td>symlink_node_modules</td>
-        <td>
-                            Turn symlinking of node_modules on
+<p>Currently the default is set <code>False</code>, but will likely be flipped <code>True</code> in rules_nodejs 3.0.0
+Defaults to <code>False</code></p>
 
-This requires the use of Bazel 0.26.0 and the experimental
-managed_directories feature.
+<h4 id="npm_install-symlink_node_modules">symlink_node_modules</h4>
 
-When true, the package manager will run in the package.json folder
+<p>(<em>Boolean</em>): Turn symlinking of node_modules on</p>
+
+<p>This requires the use of Bazel 0.26.0 and the experimental
+managed_directories feature.</p>
+
+<p>When true, the package manager will run in the package.json folder
 and the resulting node_modules folder will be symlinked into the
-external repository create by this rule.
+external repository create by this rule.</p>
 
-When false, the package manager will run in the external repository
+<p>When false, the package manager will run in the external repository
 created by this rule and any files other than the package.json file and
 the lock file that are required for it to run should be listed in the
 data attribute.
-                                </td>
-        <td>Boolean</td>
-        <td>optional</td>
-        <td>
-            True
-        </td>
-      </tr>
-            <tr id="npm_install-timeout">
-        <td>timeout</td>
-        <td>
-                            Maximum duration of the package manager execution in seconds.
-                                </td>
-        <td>Integer</td>
-        <td>optional</td>
-        <td>
-            3600
-        </td>
-      </tr>
-        </tbody>
-</table>
+Defaults to <code>True</code></p>
+
+<h4 id="npm_install-timeout">timeout</h4>
+
+<p>(<em>Integer</em>): Maximum duration of the package manager execution in seconds.
+Defaults to <code>3600</code></p>
 
 <h2 id="pkg_npm">pkg_npm</h2>
 
@@ -1374,136 +1053,66 @@ pkg_npm(<a href="#pkg_npm-name">name</a>, <a href="#pkg_npm-deps">deps</a>, <a h
         <a href="#pkg_npm-substitutions">substitutions</a>, <a href="#pkg_npm-vendor_external">vendor_external</a>)
 </pre>
 
-<p><strong>ATTRIBUTES</strong></p>
+<h4 id="pkg_npm-name">name</h4>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Type</th>
-    <th>Mandatory</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="pkg_npm-name">
-        <td>name</td>
-        <td>
-                            A unique name for this target.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#name">Name</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="pkg_npm-deps">
-        <td>deps</td>
-        <td>
-                            Other targets which produce files that should be included in the package, such as <code>rollup_bundle</code>
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="pkg_npm-nested_packages">
-        <td>nested_packages</td>
-        <td>
-                            Other pkg_npm rules whose content is copied into this package.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="pkg_npm-node_context_data">
-        <td>node_context_data</td>
-        <td>
-                            Provides info about the build context, such as stamping.
-        
-        By default it reads from the bazel command line, such as the <code>--stamp</code> argument.
-        Use this to override values for this target, such as enabling or disabling stamping.
-        You can use the <code>node_context_data</code> rule in <code>@build_bazel_rules_nodejs//internal/node:context.bzl</code>
-        to create a NodeContextInfo.
-                                      The dependencies of this attribute must provide: NodeContextInfo
-                    </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>optional</td>
-        <td>
-            @build_bazel_rules_nodejs//internal:node_context_data
-        </td>
-      </tr>
-            <tr id="pkg_npm-package_name">
-        <td>package_name</td>
-        <td>
-                            Optional package_name that this npm package may be imported as.
-                                </td>
-        <td>String</td>
-        <td>optional</td>
-        <td>
-            ""
-        </td>
-      </tr>
-            <tr id="pkg_npm-replace_with_version">
-        <td>replace_with_version</td>
-        <td>
-                            DEPRECATED: use substitutions instead.
-        
-        <code>replace_with_version = "my_version_placeholder"</code> is just syntax sugar for
-        <code>substitutions = {"my_version_placeholder": "{BUILD_SCM_VERSION}"}</code>.
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#name">Name</a>, mandatory</em>): A unique name for this target.</p>
 
-        Follow this deprecation at https://github.com/bazelbuild/rules_nodejs/issues/2158
-                                </td>
-        <td>String</td>
-        <td>optional</td>
-        <td>
-            "0.0.0-PLACEHOLDER"
-        </td>
-      </tr>
-            <tr id="pkg_npm-srcs">
-        <td>srcs</td>
-        <td>
-                            Files inside this directory which are simply copied into the package.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="pkg_npm-substitutions">
-        <td>substitutions</td>
-        <td>
-                            Key-value pairs which are replaced in all the files while building the package.
-        
-        You can use values from the workspace status command using curly braces, for example
-        <code>{"0.0.0-PLACEHOLDER": "{STABLE_GIT_VERSION}"}</code>.
-        See the section on stamping in the README
-                                </td>
-        <td><a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -&gt; String</a></td>
-        <td>optional</td>
-        <td>
-            {}
-        </td>
-      </tr>
-            <tr id="pkg_npm-vendor_external">
-        <td>vendor_external</td>
-        <td>
-                            External workspaces whose contents should be vendored into this workspace.
-        Avoids 'external/foo' path segments in the resulting package.
-                                </td>
-        <td>List of strings</td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-        </tbody>
-</table>
+<h4 id="pkg_npm-deps">deps</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></em>): Other targets which produce files that should be included in the package, such as <code>rollup_bundle</code>
+Defaults to <code>[]</code></p>
+
+<h4 id="pkg_npm-nested_packages">nested_packages</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></em>): Other pkg_npm rules whose content is copied into this package.
+Defaults to <code>[]</code></p>
+
+<h4 id="pkg_npm-node_context_data">node_context_data</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></em>): Provides info about the build context, such as stamping.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    By default it reads from the bazel command line, such as the &lt;code&gt;--stamp&lt;/code&gt; argument.
+    Use this to override values for this target, such as enabling or disabling stamping.
+    You can use the &lt;code&gt;node_context_data&lt;/code&gt; rule in &lt;code&gt;@build_bazel_rules_nodejs//internal/node:context.bzl&lt;/code&gt;
+    to create a NodeContextInfo.  The dependencies of this attribute must provide: NodeContextInfo
+</code></pre></div></div>
+
+<p>Defaults to <code>@build_bazel_rules_nodejs//internal:node_context_data</code></p>
+
+<h4 id="pkg_npm-package_name">package_name</h4>
+
+<p>(<em>String</em>): Optional package_name that this npm package may be imported as.
+Defaults to <code>""</code></p>
+
+<h4 id="pkg_npm-replace_with_version">replace_with_version</h4>
+
+<p>(<em>String</em>): DEPRECATED: use substitutions instead.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    &lt;code&gt;replace_with_version = "my_version_placeholder"&lt;/code&gt; is just syntax sugar for
+    &lt;code&gt;substitutions = {"my_version_placeholder": "{BUILD_SCM_VERSION}"}&lt;/code&gt;.
+
+    Follow this deprecation at https://github.com/bazelbuild/rules_nodejs/issues/2158 Defaults to &lt;code&gt;"0.0.0-PLACEHOLDER"&lt;/code&gt;
+</code></pre></div></div>
+
+<h4 id="pkg_npm-srcs">srcs</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></em>): Files inside this directory which are simply copied into the package.
+Defaults to <code>[]</code></p>
+
+<h4 id="pkg_npm-substitutions">substitutions</h4>
+
+<p>(<em><a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -&gt; String</a></em>): Key-value pairs which are replaced in all the files while building the package.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    You can use values from the workspace status command using curly braces, for example
+    &lt;code&gt;{"0.0.0-PLACEHOLDER": "{STABLE_GIT_VERSION}"}&lt;/code&gt;.
+    See the section on stamping in the README Defaults to &lt;code&gt;{}&lt;/code&gt;
+</code></pre></div></div>
+
+<h4 id="pkg_npm-vendor_external">vendor_external</h4>
+
+<p>(<em>List of strings</em>): External workspaces whose contents should be vendored into this workspace.
+        Avoids ‘external/foo’ path segments in the resulting package.
+Defaults to <code>[]</code></p>
 
 <h2 id="pkg_web">pkg_web</h2>
 
@@ -1513,86 +1122,40 @@ pkg_npm(<a href="#pkg_npm-name">name</a>, <a href="#pkg_npm-deps">deps</a>, <a h
 pkg_web(<a href="#pkg_web-name">name</a>, <a href="#pkg_web-additional_root_paths">additional_root_paths</a>, <a href="#pkg_web-node_context_data">node_context_data</a>, <a href="#pkg_web-srcs">srcs</a>, <a href="#pkg_web-substitutions">substitutions</a>)
 </pre>
 
-<p><strong>ATTRIBUTES</strong></p>
+<h4 id="pkg_web-name">name</h4>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Type</th>
-    <th>Mandatory</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="pkg_web-name">
-        <td>name</td>
-        <td>
-                            A unique name for this target.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#name">Name</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="pkg_web-additional_root_paths">
-        <td>additional_root_paths</td>
-        <td>
-                            Path prefixes to strip off all srcs, in addition to the current package. Longest wins.
-                                </td>
-        <td>List of strings</td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="pkg_web-node_context_data">
-        <td>node_context_data</td>
-        <td>
-                            Provides info about the build context, such as stamping.
-        
-        By default it reads from the bazel command line, such as the <code>--stamp</code> argument.
-        Use this to override values for this target, such as enabling or disabling stamping.
-        You can use the <code>node_context_data</code> rule in <code>@build_bazel_rules_nodejs//internal/node:context.bzl</code>
-        to create a NodeContextInfo.
-                                      The dependencies of this attribute must provide: NodeContextInfo
-                    </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>optional</td>
-        <td>
-            @build_bazel_rules_nodejs//internal:node_context_data
-        </td>
-      </tr>
-            <tr id="pkg_web-srcs">
-        <td>srcs</td>
-        <td>
-                            Files which should be copied into the package
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="pkg_web-substitutions">
-        <td>substitutions</td>
-        <td>
-                            Key-value pairs which are replaced in all the files while building the package.
-        
-        You can use values from the workspace status command using curly braces, for example
-        <code>{"0.0.0-PLACEHOLDER": "{STABLE_GIT_VERSION}"}</code>.
-        See the section on stamping in the README.
-                                </td>
-        <td><a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -&gt; String</a></td>
-        <td>optional</td>
-        <td>
-            {}
-        </td>
-      </tr>
-        </tbody>
-</table>
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#name">Name</a>, mandatory</em>): A unique name for this target.</p>
+
+<h4 id="pkg_web-additional_root_paths">additional_root_paths</h4>
+
+<p>(<em>List of strings</em>): Path prefixes to strip off all srcs, in addition to the current package. Longest wins.
+Defaults to <code>[]</code></p>
+
+<h4 id="pkg_web-node_context_data">node_context_data</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></em>): Provides info about the build context, such as stamping.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    By default it reads from the bazel command line, such as the &lt;code&gt;--stamp&lt;/code&gt; argument.
+    Use this to override values for this target, such as enabling or disabling stamping.
+    You can use the &lt;code&gt;node_context_data&lt;/code&gt; rule in &lt;code&gt;@build_bazel_rules_nodejs//internal/node:context.bzl&lt;/code&gt;
+    to create a NodeContextInfo.  The dependencies of this attribute must provide: NodeContextInfo
+</code></pre></div></div>
+
+<p>Defaults to <code>@build_bazel_rules_nodejs//internal:node_context_data</code></p>
+
+<h4 id="pkg_web-srcs">srcs</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></em>): Files which should be copied into the package
+Defaults to <code>[]</code></p>
+
+<h4 id="pkg_web-substitutions">substitutions</h4>
+
+<p>(<em><a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -&gt; String</a></em>): Key-value pairs which are replaced in all the files while building the package.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    You can use values from the workspace status command using curly braces, for example
+    &lt;code&gt;{"0.0.0-PLACEHOLDER": "{STABLE_GIT_VERSION}"}&lt;/code&gt;.
+    See the section on stamping in the README. Defaults to &lt;code&gt;{}&lt;/code&gt;
+</code></pre></div></div>
 
 <h2 id="yarn_install">yarn_install</h2>
 
@@ -1604,230 +1167,139 @@ check if yarn is being run by the <code>yarn_install</code> repository rule.</p>
 
 <pre>
 yarn_install(<a href="#yarn_install-name">name</a>, <a href="#yarn_install-args">args</a>, <a href="#yarn_install-data">data</a>, <a href="#yarn_install-environment">environment</a>, <a href="#yarn_install-included_files">included_files</a>, <a href="#yarn_install-manual_build_file_contents">manual_build_file_contents</a>,
-             <a href="#yarn_install-package_json">package_json</a>, <a href="#yarn_install-quiet">quiet</a>, <a href="#yarn_install-strict_visibility">strict_visibility</a>, <a href="#yarn_install-symlink_node_modules">symlink_node_modules</a>, <a href="#yarn_install-timeout">timeout</a>,
+             <a href="#yarn_install-package_json">package_json</a>, <a href="#yarn_install-quiet">quiet</a>, <a href="#yarn_install-repo_mapping">repo_mapping</a>, <a href="#yarn_install-strict_visibility">strict_visibility</a>, <a href="#yarn_install-symlink_node_modules">symlink_node_modules</a>, <a href="#yarn_install-timeout">timeout</a>,
              <a href="#yarn_install-use_global_yarn_cache">use_global_yarn_cache</a>, <a href="#yarn_install-yarn_lock">yarn_lock</a>)
 </pre>
 
-<p><strong>ATTRIBUTES</strong></p>
+<h4 id="yarn_install-name">name</h4>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Type</th>
-    <th>Mandatory</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="yarn_install-name">
-        <td>name</td>
-        <td>
-                            A unique name for this repository.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#name">Name</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="yarn_install-args">
-        <td>args</td>
-        <td>
-                            Arguments passed to yarn install.
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#name">Name</a>, mandatory</em>): A unique name for this repository.</p>
 
-See yarn CLI docs https://yarnpkg.com/en/docs/cli/install for complete list of supported arguments.
-                                </td>
-        <td>List of strings</td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="yarn_install-data">
-        <td>data</td>
-        <td>
-                            Data files required by this rule.
+<h4 id="yarn_install-args">args</h4>
 
-If symlink_node_modules is True, this attribute is optional since the package manager
+<p>(<em>List of strings</em>): Arguments passed to yarn install.</p>
+
+<p>See yarn CLI docs https://yarnpkg.com/en/docs/cli/install for complete list of supported arguments.
+Defaults to <code>[]</code></p>
+
+<h4 id="yarn_install-data">data</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></em>): Data files required by this rule.</p>
+
+<p>If symlink_node_modules is True, this attribute is optional since the package manager
 will run in your workspace folder. It is recommended, however, that all files that the
 package manager depends on, such as <code>.rc</code> files or files used in <code>postinstall</code>, are added
 symlink_node_modules is True so that the repository rule is rerun when any of these files
-change.
+change.</p>
 
-If symlink_node_modules is False, the package manager is run in the bazel external
+<p>If symlink_node_modules is False, the package manager is run in the bazel external
 repository so all files that the package manager depends on must be listed.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="yarn_install-environment">
-        <td>environment</td>
-        <td>
-                            Environment variables to set before calling the package manager.
-                                </td>
-        <td><a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -&gt; String</a></td>
-        <td>optional</td>
-        <td>
-            {}
-        </td>
-      </tr>
-            <tr id="yarn_install-included_files">
-        <td>included_files</td>
-        <td>
-                            List of file extensions to be included in the npm package targets.
+Defaults to <code>[]</code></p>
 
-For example, [".js", ".d.ts", ".proto", ".json", ""].
+<h4 id="yarn_install-environment">environment</h4>
 
-This option is useful to limit the number of files that are inputs
+<p>(<em><a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -&gt; String</a></em>): Environment variables to set before calling the package manager.
+Defaults to <code>{}</code></p>
+
+<h4 id="yarn_install-included_files">included_files</h4>
+
+<p>(<em>List of strings</em>): List of file extensions to be included in the npm package targets.</p>
+
+<p>For example, [“.js”, “.d.ts”, “.proto”, “.json”, “”].</p>
+
+<p>This option is useful to limit the number of files that are inputs
 to actions that depend on npm package targets. See
-https://github.com/bazelbuild/bazel/issues/5153.
+https://github.com/bazelbuild/bazel/issues/5153.</p>
 
-If set to an empty list then all files are included in the package targets.
+<p>If set to an empty list then all files are included in the package targets.
 If set to a list of extensions, only files with matching extensions are
 included in the package targets. An empty string in the list is a special
 string that denotes that files with no extensions such as <code>README</code> should
-be included in the package targets.
+be included in the package targets.</p>
 
-This attribute applies to both the coarse <code>@wksp//:node_modules</code> target
+<p>This attribute applies to both the coarse <code>@wksp//:node_modules</code> target
 as well as the fine grained targets such as <code>@wksp//foo</code>.
-                                </td>
-        <td>List of strings</td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="yarn_install-manual_build_file_contents">
-        <td>manual_build_file_contents</td>
-        <td>
-                            Experimental attribute that can be used to override the generated BUILD.bazel file and set its contents manually.
+Defaults to <code>[]</code></p>
 
-Can be used to work-around a bazel performance issue if the
+<h4 id="yarn_install-manual_build_file_contents">manual_build_file_contents</h4>
+
+<p>(<em>String</em>): Experimental attribute that can be used to override the generated BUILD.bazel file and set its contents manually.</p>
+
+<p>Can be used to work-around a bazel performance issue if the
 default <code>@wksp//:node_modules</code> target has too many files in it.
 See https://github.com/bazelbuild/bazel/issues/5153. If
 you are running into performance issues due to a large
 node_modules target it is recommended to switch to using
 fine grained npm dependencies.
-                                </td>
-        <td>String</td>
-        <td>optional</td>
-        <td>
-            ""
-        </td>
-      </tr>
-            <tr id="yarn_install-package_json">
-        <td>package_json</td>
-        <td>
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="yarn_install-quiet">
-        <td>quiet</td>
-        <td>
-                            If stdout and stderr should be printed to the terminal.
-                                </td>
-        <td>Boolean</td>
-        <td>optional</td>
-        <td>
-            True
-        </td>
-      </tr>
-            <tr id="yarn_install-strict_visibility">
-        <td>strict_visibility</td>
-        <td>
-                            Turn on stricter visibility for generated BUILD.bazel files
+Defaults to <code>""</code></p>
 
-When enabled, only dependencies within the given <code>package.json</code> file are given public visibility.
+<h4 id="yarn_install-package_json">package_json</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">Label</a>, mandatory</em>)</p>
+
+<h4 id="yarn_install-quiet">quiet</h4>
+
+<p>(<em>Boolean</em>): If stdout and stderr should be printed to the terminal.
+Defaults to <code>True</code></p>
+
+<h4 id="yarn_install-repo_mapping">repo_mapping</h4>
+
+<p>(<em><a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -&gt; String</a>, mandatory</em>): A dictionary from local repository name to global repository name. This allows controls over workspace dependency resolution for dependencies of this repository.&lt;p&gt;For example, an entry <code>"@foo": "@bar"</code> declares that, for any time this repository depends on <code>@foo</code> (such as a dependency on <code>@foo//some:target</code>, it should actually resolve that dependency within globally-declared <code>@bar</code> (<code>@bar//some:target</code>).</p>
+
+<h4 id="yarn_install-strict_visibility">strict_visibility</h4>
+
+<p>(<em>Boolean</em>): Turn on stricter visibility for generated BUILD.bazel files</p>
+
+<p>When enabled, only dependencies within the given <code>package.json</code> file are given public visibility.
 All transitive dependencies are given limited visibility, enforcing that all direct dependencies are
-listed in the <code>package.json</code> file.
+listed in the <code>package.json</code> file.</p>
 
-Currently the default is set <code>False</code>, but will likely be flipped <code>True</code> in rules_nodejs 3.0.0
-                                </td>
-        <td>Boolean</td>
-        <td>optional</td>
-        <td>
-            False
-        </td>
-      </tr>
-            <tr id="yarn_install-symlink_node_modules">
-        <td>symlink_node_modules</td>
-        <td>
-                            Turn symlinking of node_modules on
+<p>Currently the default is set <code>False</code>, but will likely be flipped <code>True</code> in rules_nodejs 3.0.0
+Defaults to <code>False</code></p>
 
-This requires the use of Bazel 0.26.0 and the experimental
-managed_directories feature.
+<h4 id="yarn_install-symlink_node_modules">symlink_node_modules</h4>
 
-When true, the package manager will run in the package.json folder
+<p>(<em>Boolean</em>): Turn symlinking of node_modules on</p>
+
+<p>This requires the use of Bazel 0.26.0 and the experimental
+managed_directories feature.</p>
+
+<p>When true, the package manager will run in the package.json folder
 and the resulting node_modules folder will be symlinked into the
-external repository create by this rule.
+external repository create by this rule.</p>
 
-When false, the package manager will run in the external repository
+<p>When false, the package manager will run in the external repository
 created by this rule and any files other than the package.json file and
 the lock file that are required for it to run should be listed in the
 data attribute.
-                                </td>
-        <td>Boolean</td>
-        <td>optional</td>
-        <td>
-            True
-        </td>
-      </tr>
-            <tr id="yarn_install-timeout">
-        <td>timeout</td>
-        <td>
-                            Maximum duration of the package manager execution in seconds.
-                                </td>
-        <td>Integer</td>
-        <td>optional</td>
-        <td>
-            3600
-        </td>
-      </tr>
-            <tr id="yarn_install-use_global_yarn_cache">
-        <td>use_global_yarn_cache</td>
-        <td>
-                            Use the global yarn cache on the system.
+Defaults to <code>True</code></p>
 
-The cache lets you avoid downloading packages multiple times.
+<h4 id="yarn_install-timeout">timeout</h4>
+
+<p>(<em>Integer</em>): Maximum duration of the package manager execution in seconds.
+Defaults to <code>3600</code></p>
+
+<h4 id="yarn_install-use_global_yarn_cache">use_global_yarn_cache</h4>
+
+<p>(<em>Boolean</em>): Use the global yarn cache on the system.</p>
+
+<p>The cache lets you avoid downloading packages multiple times.
 However, it can introduce non-hermeticity, and the yarn cache can
-have bugs.
+have bugs.</p>
 
-Disabling this attribute causes every run of yarn to have a unique
-cache_directory.
+<p>Disabling this attribute causes every run of yarn to have a unique
+cache_directory.</p>
 
-If True, this rule will pass <code>--mutex network</code> to yarn to ensure that
-the global cache can be shared by parallelized yarn_install rules.
+<p>If True, this rule will pass <code>--mutex network</code> to yarn to ensure that
+the global cache can be shared by parallelized yarn_install rules.</p>
 
-If False, this rule will pass <code>--cache-folder /path/to/external/repository/__yarn_cache</code>
+<p>If False, this rule will pass <code>--cache-folder /path/to/external/repository/__yarn_cache</code>
 to yarn so that the local cache is contained within the external repository.
-                                </td>
-        <td>Boolean</td>
-        <td>optional</td>
-        <td>
-            True
-        </td>
-      </tr>
-            <tr id="yarn_install-yarn_lock">
-        <td>yarn_lock</td>
-        <td>
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-        </tbody>
-</table>
+Defaults to <code>True</code></p>
+
+<h4 id="yarn_install-yarn_lock">yarn_lock</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">Label</a>, mandatory</em>)</p>
 
 <h2 id="check_bazel_version">check_bazel_version</h2>
 
@@ -1847,35 +1319,15 @@ check_bazel_version(<a href="#check_bazel_version-minimum_bazel_version">minimum
 
 <p><strong>PARAMETERS</strong></p>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="check_bazel_version-minimum_bazel_version">
-        <td>minimum_bazel_version</td>
-        <td>
-                            a string indicating the minimum version
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="check_bazel_version-message">
-        <td>message</td>
-        <td>
-                            optional string to print to your users, could be used to help them update
-                    </td>
-        <td>
-            ""
-        </td>
-      </tr>
-        </tbody>
-</table>
+<h4 id="check_bazel_version-minimum_bazel_version">minimum_bazel_version</h4>
+
+<p>a string indicating the minimum version</p>
+
+<h4 id="check_bazel_version-message">message</h4>
+
+<p>optional string to print to your users, could be used to help them update</p>
+
+<p>Defaults to <code>""</code></p>
 
 <h2 id="copy_to_bin">copy_to_bin</h2>
 
@@ -1896,44 +1348,17 @@ copy_to_bin(<a href="#copy_to_bin-name">name</a>, <a href="#copy_to_bin-srcs">sr
 
 <p><strong>PARAMETERS</strong></p>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="copy_to_bin-name">
-        <td>name</td>
-        <td>
-                            Name of the rule.
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="copy_to_bin-srcs">
-        <td>srcs</td>
-        <td>
-                            A List of Labels. File(s) to to copy.
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="copy_to_bin-kwargs">
-        <td>kwargs</td>
-        <td>
-                            further keyword arguments, e.g. <code>visibility</code>
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-        </tbody>
-</table>
+<h4 id="copy_to_bin-name">name</h4>
+
+<p>Name of the rule.</p>
+
+<h4 id="copy_to_bin-srcs">srcs</h4>
+
+<p>A List of Labels. File(s) to to copy.</p>
+
+<h4 id="copy_to_bin-kwargs">kwargs</h4>
+
+<p>further keyword arguments, e.g. <code>visibility</code></p>
 
 <h2 id="generated_file_test">generated_file_test</h2>
 
@@ -1948,73 +1373,35 @@ generated_file_test(<a href="#generated_file_test-name">name</a>, <a href="#gene
 
 <p><strong>PARAMETERS</strong></p>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="generated_file_test-name">
-        <td>name</td>
-        <td>
-                            Name of the rule.
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="generated_file_test-generated">
-        <td>generated</td>
-        <td>
-                            a Label of the output file generated by another rule
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="generated_file_test-src">
-        <td>src</td>
-        <td>
-                            Label of the source file in the workspace
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="generated_file_test-substring_search">
-        <td>substring_search</td>
-        <td>
-                            When true, creates a test that will fail only if the golden file is not found
-    anywhere within the generated file. Note that the .update rule is not generated in substring mode.
-                    </td>
-        <td>
-            False
-        </td>
-      </tr>
-            <tr id="generated_file_test-src_dbg">
-        <td>src_dbg</td>
-        <td>
-                            if the build uses <code>--compilation_mode dbg</code> then some rules will produce different output.
-    In this case you can specify what the dbg version of the output should look like
-                    </td>
-        <td>
-            None
-        </td>
-      </tr>
-            <tr id="generated_file_test-kwargs">
-        <td>kwargs</td>
-        <td>
-                            extra arguments passed to the underlying nodejs_test or nodejs_binary
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-        </tbody>
-</table>
+<h4 id="generated_file_test-name">name</h4>
+
+<p>Name of the rule.</p>
+
+<h4 id="generated_file_test-generated">generated</h4>
+
+<p>a Label of the output file generated by another rule</p>
+
+<h4 id="generated_file_test-src">src</h4>
+
+<p>Label of the source file in the workspace</p>
+
+<h4 id="generated_file_test-substring_search">substring_search</h4>
+
+<p>When true, creates a test that will fail only if the golden file is not found
+anywhere within the generated file. Note that the .update rule is not generated in substring mode.</p>
+
+<p>Defaults to <code>False</code></p>
+
+<h4 id="generated_file_test-src_dbg">src_dbg</h4>
+
+<p>if the build uses <code>--compilation_mode dbg</code> then some rules will produce different output.
+In this case you can specify what the dbg version of the output should look like</p>
+
+<p>Defaults to <code>None</code></p>
+
+<h4 id="generated_file_test-kwargs">kwargs</h4>
+
+<p>extra arguments passed to the underlying nodejs_test or nodejs_binary</p>
 
 <h2 id="js_library">js_library</h2>
 
@@ -2083,62 +1470,31 @@ js_library(<a href="#js_library-name">name</a>, <a href="#js_library-srcs">srcs<
 
 <p><strong>PARAMETERS</strong></p>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="js_library-name">
-        <td>name</td>
-        <td>
-                            a name for the target
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="js_library-srcs">
-        <td>srcs</td>
-        <td>
-                            the list of files that comprise the package
-                    </td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="js_library-package_name">
-        <td>package_name</td>
-        <td>
-                            the name it will be imported by. Should match the "name" field in the package.json file.
-                    </td>
-        <td>
-            None
-        </td>
-      </tr>
-            <tr id="js_library-deps">
-        <td>deps</td>
-        <td>
-                            other targets that provide JavaScript code
-                    </td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="js_library-kwargs">
-        <td>kwargs</td>
-        <td>
-                            used for undocumented legacy features
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-        </tbody>
-</table>
+<h4 id="js_library-name">name</h4>
+
+<p>a name for the target</p>
+
+<h4 id="js_library-srcs">srcs</h4>
+
+<p>the list of files that comprise the package</p>
+
+<p>Defaults to <code>[]</code></p>
+
+<h4 id="js_library-package_name">package_name</h4>
+
+<p>the name it will be imported by. Should match the “name” field in the package.json file.</p>
+
+<p>Defaults to <code>None</code></p>
+
+<h4 id="js_library-deps">deps</h4>
+
+<p>other targets that provide JavaScript code</p>
+
+<p>Defaults to <code>[]</code></p>
+
+<h4 id="js_library-kwargs">kwargs</h4>
+
+<p>used for undocumented legacy features</p>
 
 <h2 id="npm_package_bin">npm_package_bin</h2>
 
@@ -2165,139 +1521,103 @@ npm_package_bin(<a href="#npm_package_bin-tool">tool</a>, <a href="#npm_package_
 
 <p><strong>PARAMETERS</strong></p>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="npm_package_bin-tool">
-        <td>tool</td>
-        <td>
-                            a label for a binary to run, like <code>@npm//terser/bin:terser</code>. This is the longer form of package/package_bin.
-      Note that you can also refer to a binary in your local workspace.
-                    </td>
-        <td>
-            None
-        </td>
-      </tr>
-            <tr id="npm_package_bin-package">
-        <td>package</td>
-        <td>
-                            an npm package whose binary to run, like "terser". Assumes your node_modules are installed in a workspace called "npm"
-                    </td>
-        <td>
-            None
-        </td>
-      </tr>
-            <tr id="npm_package_bin-package_bin">
-        <td>package_bin</td>
-        <td>
-                            the "bin" entry from <code>package</code> that should be run. By default package_bin is the same string as <code>package</code>
-                    </td>
-        <td>
-            None
-        </td>
-      </tr>
-            <tr id="npm_package_bin-data">
-        <td>data</td>
-        <td>
-                            similar to [genrule.srcs](https://docs.bazel.build/versions/master/be/general.html#genrule.srcs)
-      may also include targets that produce or reference npm packages which are needed by the tool
-                    </td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="npm_package_bin-outs">
-        <td>outs</td>
-        <td>
-                            similar to [genrule.outs](https://docs.bazel.build/versions/master/be/general.html#genrule.outs)
-                    </td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="npm_package_bin-args">
-        <td>args</td>
-        <td>
-                            Command-line arguments to the tool.
+<h4 id="npm_package_bin-tool">tool</h4>
 
-    Subject to 'Make variable' substitution. See https://docs.bazel.build/versions/master/be/make-variables.html.
+<p>a label for a binary to run, like <code>@npm//terser/bin:terser</code>. This is the longer form of package/package_bin.
+Note that you can also refer to a binary in your local workspace.</p>
 
-    1. Predefined source/output path substitions is applied first:
+<p>Defaults to <code>None</code></p>
 
-    See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_label_variables.
+<h4 id="npm_package_bin-package">package</h4>
 
-    Use $(execpath) $(execpaths) to expand labels to the execroot (where Bazel runs build actions).
+<p>an npm package whose binary to run, like “terser”. Assumes your node_modules are installed in a workspace called “npm”</p>
 
-    Use $(rootpath) $(rootpaths) to expand labels to the runfiles path that a built binary can use
-    to find its dependencies.
+<p>Defaults to <code>None</code></p>
 
-    Since npm_package_bin is used primarily for build actions, in most cases you'll want to
-    use $(execpath) or $(execpaths) to expand locations.
+<h4 id="npm_package_bin-package_bin">package_bin</h4>
 
-    Using $(location) and $(locations) expansions is not recommended as these are a synonyms
-    for either $(execpath) or $(rootpath) depending on the context.
+<p>the “bin” entry from <code>package</code> that should be run. By default package_bin is the same string as <code>package</code></p>
 
-    2. "Make" variables are expanded second:
+<p>Defaults to <code>None</code></p>
 
-    Predefined "Make" variables such as $(COMPILATION_MODE) and $(TARGET_CPU) are expanded.
-    See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_variables.
+<h4 id="npm_package_bin-data">data</h4>
 
-    Like genrule, you may also use some syntax sugar for locations.
+<p>similar to <a href="https://docs.bazel.build/versions/master/be/general.html#genrule.srcs">genrule.srcs</a>
+may also include targets that produce or reference npm packages which are needed by the tool</p>
 
-    - <code>$@</code>: if you have only one output file, the location of the output
-    - <code>$(@D)</code>: The output directory. If output_dir=False and there is only one file name in outs, this expands to the directory
-        containing that file. If there are multiple files, this instead expands to the package's root directory in the genfiles
-        tree, even if all generated files belong to the same subdirectory! If output_dir=True then this corresponds
-        to the output directory which is the $(RULEDIR)/{target_name}.
-    - <code>$(RULEDIR)</code>: the root output directory of the rule, corresponding with its package
-        (can be used with output_dir=True or False)
+<p>Defaults to <code>[]</code></p>
 
-    See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_genrule_variables.
+<h4 id="npm_package_bin-outs">outs</h4>
 
-    Custom variables are also expanded including variables set through the Bazel CLI with --define=SOME_VAR=SOME_VALUE.
-    See https://docs.bazel.build/versions/master/be/make-variables.html#custom_variables.
-                    </td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="npm_package_bin-output_dir">
-        <td>output_dir</td>
-        <td>
-                            set to True if you want the output to be a directory
-         Exactly one of <code>outs</code>, <code>output_dir</code> may be used.
-         If you output a directory, there can only be one output, which will be a directory named the same as the target.
-                    </td>
-        <td>
-            False
-        </td>
-      </tr>
-            <tr id="npm_package_bin-link_workspace_root">
-        <td>link_workspace_root</td>
-        <td>
-                            Link the workspace root to the bin_dir to support absolute requires like 'my_wksp/path/to/file'.
-      If source files need to be required then they can be copied to the bin_dir with copy_to_bin.
-                    </td>
-        <td>
-            False
-        </td>
-      </tr>
-            <tr id="npm_package_bin-kwargs">
-        <td>kwargs</td>
-        <td>
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-        </tbody>
-</table>
+<p>similar to <a href="https://docs.bazel.build/versions/master/be/general.html#genrule.outs">genrule.outs</a></p>
+
+<p>Defaults to <code>[]</code></p>
+
+<h4 id="npm_package_bin-args">args</h4>
+
+<p>Command-line arguments to the tool.</p>
+
+<p>Subject to ‘Make variable’ substitution. See https://docs.bazel.build/versions/master/be/make-variables.html.</p>
+
+<ol>
+  <li>Predefined source/output path substitions is applied first:</li>
+</ol>
+
+<p>See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_label_variables.</p>
+
+<p>Use $(execpath) $(execpaths) to expand labels to the execroot (where Bazel runs build actions).</p>
+
+<p>Use $(rootpath) $(rootpaths) to expand labels to the runfiles path that a built binary can use
+to find its dependencies.</p>
+
+<p>Since npm_package_bin is used primarily for build actions, in most cases you’ll want to
+use $(execpath) or $(execpaths) to expand locations.</p>
+
+<p>Using $(location) and $(locations) expansions is not recommended as these are a synonyms
+for either $(execpath) or $(rootpath) depending on the context.</p>
+
+<ol>
+  <li>“Make” variables are expanded second:</li>
+</ol>
+
+<p>Predefined “Make” variables such as $(COMPILATION_MODE) and $(TARGET_CPU) are expanded.
+See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_variables.</p>
+
+<p>Like genrule, you may also use some syntax sugar for locations.</p>
+
+<ul>
+  <li><code>$@</code>: if you have only one output file, the location of the output</li>
+  <li><code>$(@D)</code>: The output directory. If output_dir=False and there is only one file name in outs, this expands to the directory
+containing that file. If there are multiple files, this instead expands to the package’s root directory in the genfiles
+tree, even if all generated files belong to the same subdirectory! If output_dir=True then this corresponds
+to the output directory which is the $(RULEDIR)/{target_name}.</li>
+  <li><code>$(RULEDIR)</code>: the root output directory of the rule, corresponding with its package
+(can be used with output_dir=True or False)</li>
+</ul>
+
+<p>See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_genrule_variables.</p>
+
+<p>Custom variables are also expanded including variables set through the Bazel CLI with –define=SOME_VAR=SOME_VALUE.
+See https://docs.bazel.build/versions/master/be/make-variables.html#custom_variables.</p>
+
+<p>Defaults to <code>[]</code></p>
+
+<h4 id="npm_package_bin-output_dir">output_dir</h4>
+
+<p>set to True if you want the output to be a directory
+Exactly one of <code>outs</code>, <code>output_dir</code> may be used.
+If you output a directory, there can only be one output, which will be a directory named the same as the target.</p>
+
+<p>Defaults to <code>False</code></p>
+
+<h4 id="npm_package_bin-link_workspace_root">link_workspace_root</h4>
+
+<p>Link the workspace root to the bin_dir to support absolute requires like ‘my_wksp/path/to/file’.
+If source files need to be required then they can be copied to the bin_dir with copy_to_bin.</p>
+
+<p>Defaults to <code>False</code></p>
+
+<h4 id="npm_package_bin-kwargs">kwargs</h4>
 
 <h2 id="params_file">params_file</h2>
 
@@ -2311,98 +1631,65 @@ params_file(<a href="#params_file-name">name</a>, <a href="#params_file-out">out
 
 <p><strong>PARAMETERS</strong></p>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="params_file-name">
-        <td>name</td>
-        <td>
-                            Name of the rule.
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="params_file-out">
-        <td>out</td>
-        <td>
-                            Path of the output file, relative to this package.
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="params_file-args">
-        <td>args</td>
-        <td>
-                            Arguments to concatenate into a params file.
+<h4 id="params_file-name">name</h4>
 
-    Subject to 'Make variable' substitution. See https://docs.bazel.build/versions/master/be/make-variables.html.
+<p>Name of the rule.</p>
 
-    1. Subject to predefined source/output path variables substitutions.
+<h4 id="params_file-out">out</h4>
 
-    The predefined variables <code>execpath</code>, <code>execpaths</code>, <code>rootpath</code>, <code>rootpaths</code>, <code>location</code>, and <code>locations</code> take
-    label parameters (e.g. <code>$(execpath //foo:bar)</code>) and substitute the file paths denoted by that label.
+<p>Path of the output file, relative to this package.</p>
 
-    See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_label_variables for more info.
+<h4 id="params_file-args">args</h4>
 
-    NB: This $(location) substition returns the manifest file path which differs from the *_binary &amp; *_test
-    args and genrule bazel substitions. This will be fixed in a future major release.
-    See docs string of <code>expand_location_into_runfiles</code> macro in <code>internal/common/expand_into_runfiles.bzl</code>
-    for more info.
+<p>Arguments to concatenate into a params file.</p>
 
-    2. Subject to predefined variables &amp; custom variable substitutions.
+<p>Subject to ‘Make variable’ substitution. See https://docs.bazel.build/versions/master/be/make-variables.html.</p>
 
-    Predefined "Make" variables such as $(COMPILATION_MODE) and $(TARGET_CPU) are expanded.
-    See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_variables.
+<ol>
+  <li>Subject to predefined source/output path variables substitutions.</li>
+</ol>
 
-    Custom variables are also expanded including variables set through the Bazel CLI with --define=SOME_VAR=SOME_VALUE.
-    See https://docs.bazel.build/versions/master/be/make-variables.html#custom_variables.
+<p>The predefined variables <code>execpath</code>, <code>execpaths</code>, <code>rootpath</code>, <code>rootpaths</code>, <code>location</code>, and <code>locations</code> take
+label parameters (e.g. <code>$(execpath //foo:bar)</code>) and substitute the file paths denoted by that label.</p>
 
-    Predefined genrule variables are not supported in this context.
-                    </td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="params_file-data">
-        <td>data</td>
-        <td>
-                            Data for $(location) expansions in args.
-                    </td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="params_file-newline">
-        <td>newline</td>
-        <td>
-                            Line endings to use. One of ["auto", "unix", "windows"].
+<p>See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_label_variables for more info.</p>
 
-    "auto" for platform-determined
-    "unix" for LF
-    "windows" for CRLF
-                    </td>
-        <td>
-            "auto"
-        </td>
-      </tr>
-            <tr id="params_file-kwargs">
-        <td>kwargs</td>
-        <td>
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-        </tbody>
-</table>
+<p>NB: This $(location) substition returns the manifest file path which differs from the *_binary &amp; *_test
+args and genrule bazel substitions. This will be fixed in a future major release.
+See docs string of <code>expand_location_into_runfiles</code> macro in <code>internal/common/expand_into_runfiles.bzl</code>
+for more info.</p>
+
+<ol>
+  <li>Subject to predefined variables &amp; custom variable substitutions.</li>
+</ol>
+
+<p>Predefined “Make” variables such as $(COMPILATION_MODE) and $(TARGET_CPU) are expanded.
+See https://docs.bazel.build/versions/master/be/make-variables.html#predefined_variables.</p>
+
+<p>Custom variables are also expanded including variables set through the Bazel CLI with –define=SOME_VAR=SOME_VALUE.
+See https://docs.bazel.build/versions/master/be/make-variables.html#custom_variables.</p>
+
+<p>Predefined genrule variables are not supported in this context.</p>
+
+<p>Defaults to <code>[]</code></p>
+
+<h4 id="params_file-data">data</h4>
+
+<p>Data for $(location) expansions in args.</p>
+
+<p>Defaults to <code>[]</code></p>
+
+<h4 id="params_file-newline">newline</h4>
+
+<p>Line endings to use. One of [“auto”, “unix”, “windows”].</p>
+
+<p>“auto” for platform-determined
+“unix” for LF
+“windows” for CRLF</p>
+
+<p>Defaults to <code>"auto"</code></p>
+
+<h4 id="params_file-kwargs">kwargs</h4>
 
 <h2 id="declarationinfo">DeclarationInfo</h2>
 
@@ -2723,35 +2010,15 @@ declaration_info(<a href="#declaration_info-declarations">declarations</a>, <a h
 
 <p><strong>PARAMETERS</strong></p>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="declaration_info-declarations">
-        <td>declarations</td>
-        <td>
-                            list of typings files
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="declaration_info-deps">
-        <td>deps</td>
-        <td>
-                            list of labels of dependencies where we should collect their DeclarationInfo to pass transitively
-                    </td>
-        <td>
-            []
-        </td>
-      </tr>
-        </tbody>
-</table>
+<h4 id="declaration_info-declarations">declarations</h4>
+
+<p>list of typings files</p>
+
+<h4 id="declaration_info-deps">deps</h4>
+
+<p>list of labels of dependencies where we should collect their DeclarationInfo to pass transitively</p>
+
+<p>Defaults to <code>[]</code></p>
 
 <h2 id="js_ecma_script_module_info">js_ecma_script_module_info</h2>
 
@@ -2765,33 +2032,11 @@ js_ecma_script_module_info(<a href="#js_ecma_script_module_info-sources">sources
 
 <p><strong>PARAMETERS</strong></p>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="js_ecma_script_module_info-sources">
-        <td>sources</td>
-        <td>
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="js_ecma_script_module_info-deps">
-        <td>deps</td>
-        <td>
-                    </td>
-        <td>
-            []
-        </td>
-      </tr>
-        </tbody>
-</table>
+<h4 id="js_ecma_script_module_info-sources">sources</h4>
+
+<h4 id="js_ecma_script_module_info-deps">deps</h4>
+
+<p>Defaults to <code>[]</code></p>
 
 <h2 id="js_module_info">js_module_info</h2>
 
@@ -2805,33 +2050,11 @@ js_module_info(<a href="#js_module_info-sources">sources</a>, <a href="#js_modul
 
 <p><strong>PARAMETERS</strong></p>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="js_module_info-sources">
-        <td>sources</td>
-        <td>
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="js_module_info-deps">
-        <td>deps</td>
-        <td>
-                    </td>
-        <td>
-            []
-        </td>
-      </tr>
-        </tbody>
-</table>
+<h4 id="js_module_info-sources">sources</h4>
+
+<h4 id="js_module_info-deps">deps</h4>
+
+<p>Defaults to <code>[]</code></p>
 
 <h2 id="js_named_module_info">js_named_module_info</h2>
 
@@ -2845,33 +2068,11 @@ js_named_module_info(<a href="#js_named_module_info-sources">sources</a>, <a hre
 
 <p><strong>PARAMETERS</strong></p>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="js_named_module_info-sources">
-        <td>sources</td>
-        <td>
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="js_named_module_info-deps">
-        <td>deps</td>
-        <td>
-                    </td>
-        <td>
-            []
-        </td>
-      </tr>
-        </tbody>
-</table>
+<h4 id="js_named_module_info-sources">sources</h4>
+
+<h4 id="js_named_module_info-deps">deps</h4>
+
+<p>Defaults to <code>[]</code></p>
 
 <h2 id="run_node">run_node</h2>
 
@@ -2885,62 +2086,23 @@ run_node(<a href="#run_node-ctx">ctx</a>, <a href="#run_node-inputs">inputs</a>,
 
 <p><strong>PARAMETERS</strong></p>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="run_node-ctx">
-        <td>ctx</td>
-        <td>
-                            rule context from the calling rule implementation function
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="run_node-inputs">
-        <td>inputs</td>
-        <td>
-                            list or depset of inputs to the action
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="run_node-arguments">
-        <td>arguments</td>
-        <td>
-                            list or ctx.actions.Args object containing arguments to pass to the executable
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="run_node-executable">
-        <td>executable</td>
-        <td>
-                            stringy representation of the executable this action will run, eg eg. "my_executable" rather than ctx.executable.my_executable
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="run_node-kwargs">
-        <td>kwargs</td>
-        <td>
-                            all other args accepted by ctx.actions.run
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-        </tbody>
-</table>
+<h4 id="run_node-ctx">ctx</h4>
+
+<p>rule context from the calling rule implementation function</p>
+
+<h4 id="run_node-inputs">inputs</h4>
+
+<p>list or depset of inputs to the action</p>
+
+<h4 id="run_node-arguments">arguments</h4>
+
+<p>list or ctx.actions.Args object containing arguments to pass to the executable</p>
+
+<h4 id="run_node-executable">executable</h4>
+
+<p>stringy representation of the executable this action will run, eg eg. “my_executable” rather than ctx.executable.my_executable</p>
+
+<h4 id="run_node-kwargs">kwargs</h4>
 
 <h2 id="node_modules_aspect">node_modules_aspect</h2>
 
@@ -3072,6 +2234,7 @@ node_modules_aspect(<a href="#node_modules_aspect-name">name</a>)
 <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.0/anchor.min.js" type="text/javascript"></script>
 <script>
   // Automatically add anchors and links to all header elements that don't already have them.
+  anchors.options = { placement: 'left' };
   anchors.add();
 </script>
 

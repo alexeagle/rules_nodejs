@@ -239,55 +239,20 @@ in the <code>bootstrap</code> attribute of <code>karma_web_test_suite</code> or 
 protobufjs_ts_library(<a href="#protobufjs_ts_library-name">name</a>, <a href="#protobufjs_ts_library-deps">deps</a>, <a href="#protobufjs_ts_library-output_name">output_name</a>)
 </pre>
 
-<p><strong>ATTRIBUTES</strong></p>
+<h4 id="protobufjs_ts_library-name">name</h4>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Type</th>
-    <th>Mandatory</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="protobufjs_ts_library-name">
-        <td>name</td>
-        <td>
-                            A unique name for this target.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#name">Name</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="protobufjs_ts_library-deps">
-        <td>deps</td>
-        <td>
-                            proto_library targets
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="protobufjs_ts_library-output_name">
-        <td>output_name</td>
-        <td>
-                            Name of the resulting module, which you will import from.
-            If not specified, the name will match the target's name.
-                                </td>
-        <td>String</td>
-        <td>optional</td>
-        <td>
-            ""
-        </td>
-      </tr>
-        </tbody>
-</table>
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#name">Name</a>, mandatory</em>): A unique name for this target.</p>
+
+<h4 id="protobufjs_ts_library-deps">deps</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></em>): proto_library targets
+Defaults to <code>[]</code></p>
+
+<h4 id="protobufjs_ts_library-output_name">output_name</h4>
+
+<p>(<em>String</em>): Name of the resulting module, which you will import from.
+            If not specified, the name will match the target’s name.
+Defaults to <code>""</code></p>
 
 <h2 id="ts_proto_library">ts_proto_library</h2>
 
@@ -295,43 +260,13 @@ protobufjs_ts_library(<a href="#protobufjs_ts_library-name">name</a>, <a href="#
 ts_proto_library(<a href="#ts_proto_library-name">name</a>, <a href="#ts_proto_library-proto">proto</a>)
 </pre>
 
-<p><strong>ATTRIBUTES</strong></p>
+<h4 id="ts_proto_library-name">name</h4>
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Type</th>
-    <th>Mandatory</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="ts_proto_library-name">
-        <td>name</td>
-        <td>
-                            A unique name for this target.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#name">Name</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="ts_proto_library-proto">
-        <td>proto</td>
-        <td>
-                                      The dependencies of this attribute must provide: ProtoInfo
-                    </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-        </tbody>
-</table>
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#name">Name</a>, mandatory</em>): A unique name for this target.</p>
+
+<h4 id="ts_proto_library-proto">proto</h4>
+
+<p>(<em><a href="https://bazel.build/docs/build-ref.html#labels">Label</a>, mandatory</em>)  The dependencies of this attribute must provide: ProtoInfo</p>
 
 
       </div>
@@ -378,6 +313,7 @@ ts_proto_library(<a href="#ts_proto_library-name">name</a>, <a href="#ts_proto_l
 <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.0/anchor.min.js" type="text/javascript"></script>
 <script>
   // Automatically add anchors and links to all header elements that don't already have them.
+  anchors.options = { placement: 'left' };
   anchors.add();
 </script>
 

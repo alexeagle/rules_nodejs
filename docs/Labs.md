@@ -85,55 +85,24 @@ karma_web_test_suite(
 protobufjs_ts_library(<a href="#protobufjs_ts_library-name">name</a>, <a href="#protobufjs_ts_library-deps">deps</a>, <a href="#protobufjs_ts_library-output_name">output_name</a>)
 </pre>
 
-**ATTRIBUTES**
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Type</th>
-    <th>Mandatory</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="protobufjs_ts_library-name">
-        <td>name</td>
-        <td>
-                            A unique name for this target.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#name">Name</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="protobufjs_ts_library-deps">
-        <td>deps</td>
-        <td>
-                            proto_library targets
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a></td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="protobufjs_ts_library-output_name">
-        <td>output_name</td>
-        <td>
-                            Name of the resulting module, which you will import from.
+
+
+<h4 id="protobufjs_ts_library-name">name</h4>
+
+(*<a href="https://bazel.build/docs/build-ref.html#name">Name</a>, mandatory*): A unique name for this target.
+
+
+<h4 id="protobufjs_ts_library-deps">deps</h4>
+
+(*<a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a>*): proto_library targets
+Defaults to <code>[]</code>
+
+<h4 id="protobufjs_ts_library-output_name">output_name</h4>
+
+(*String*): Name of the resulting module, which you will import from.
             If not specified, the name will match the target's name.
-                                </td>
-        <td>String</td>
-        <td>optional</td>
-        <td>
-            ""
-        </td>
-      </tr>
-        </tbody>
-</table>
+Defaults to <code>""</code>
 
 
 
@@ -145,42 +114,18 @@ protobufjs_ts_library(<a href="#protobufjs_ts_library-name">name</a>, <a href="#
 ts_proto_library(<a href="#ts_proto_library-name">name</a>, <a href="#ts_proto_library-proto">proto</a>)
 </pre>
 
-**ATTRIBUTES**
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Type</th>
-    <th>Mandatory</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="ts_proto_library-name">
-        <td>name</td>
-        <td>
-                            A unique name for this target.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#name">Name</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="ts_proto_library-proto">
-        <td>proto</td>
-        <td>
-                                      The dependencies of this attribute must provide: ProtoInfo
-                    </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-        </tbody>
-</table>
+
+
+<h4 id="ts_proto_library-name">name</h4>
+
+(*<a href="https://bazel.build/docs/build-ref.html#name">Name</a>, mandatory*): A unique name for this target.
+
+
+<h4 id="ts_proto_library-proto">proto</h4>
+
+(*<a href="https://bazel.build/docs/build-ref.html#labels">Label</a>, mandatory*)  The dependencies of this attribute must provide: ProtoInfo
+
+
 
 

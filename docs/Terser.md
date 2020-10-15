@@ -63,49 +63,26 @@ If the input is a directory, then the output will also be a directory, named aft
 terser_minified(<a href="#terser_minified-name">name</a>, <a href="#terser_minified-args">args</a>, <a href="#terser_minified-config_file">config_file</a>, <a href="#terser_minified-debug">debug</a>, <a href="#terser_minified-sourcemap">sourcemap</a>, <a href="#terser_minified-src">src</a>, <a href="#terser_minified-terser_bin">terser_bin</a>)
 </pre>
 
-**ATTRIBUTES**
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Type</th>
-    <th>Mandatory</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="terser_minified-name">
-        <td>name</td>
-        <td>
-                            A unique name for this target.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#name">Name</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="terser_minified-args">
-        <td>args</td>
-        <td>
-                            Additional command line arguments to pass to terser.
+
+
+<h4 id="terser_minified-name">name</h4>
+
+(*<a href="https://bazel.build/docs/build-ref.html#name">Name</a>, mandatory*): A unique name for this target.
+
+
+<h4 id="terser_minified-args">args</h4>
+
+(*List of strings*): Additional command line arguments to pass to terser.
 
 Terser only parses minify() args from the config file so additional arguments such as <code>--comments</code> may
 be passed to the rule using this attribute. See https://github.com/terser/terser#command-line-usage for the
 full list of terser CLI options.
-                                </td>
-        <td>List of strings</td>
-        <td>optional</td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="terser_minified-config_file">
-        <td>config_file</td>
-        <td>
-                            A JSON file containing Terser minify() options.
+Defaults to <code>[]</code>
+
+<h4 id="terser_minified-config_file">config_file</h4>
+
+(*<a href="https://bazel.build/docs/build-ref.html#labels">Label</a>*): A JSON file containing Terser minify() options.
 
 This is the file you would pass to the --config-file argument in terser's CLI.
 https://github.com/terser-js/terser#minify-options documents the content of the file.
@@ -131,67 +108,35 @@ For example
 Will disable the <code>arrows</code> compression setting when debugging.
 
 If <code>config_file</code> isn't supplied, Bazel will use a default config file.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>optional</td>
-        <td>
-            @npm//@bazel/terser:terser_config.default.json
-        </td>
-      </tr>
-            <tr id="terser_minified-debug">
-        <td>debug</td>
-        <td>
-                            Configure terser to produce more readable output.
+Defaults to <code>@npm//@bazel/terser:terser_config.default.json</code>
+
+<h4 id="terser_minified-debug">debug</h4>
+
+(*Boolean*): Configure terser to produce more readable output.
 
 Instead of setting this attribute, consider using debugging compilation mode instead
 bazel build --compilation_mode=dbg //my/terser:target
 so that it only affects the current build.
-                                </td>
-        <td>Boolean</td>
-        <td>optional</td>
-        <td>
-            False
-        </td>
-      </tr>
-            <tr id="terser_minified-sourcemap">
-        <td>sourcemap</td>
-        <td>
-                            Whether to produce a .js.map output
-                                </td>
-        <td>Boolean</td>
-        <td>optional</td>
-        <td>
-            True
-        </td>
-      </tr>
-            <tr id="terser_minified-src">
-        <td>src</td>
-        <td>
-                            File(s) to minify.
+Defaults to <code>False</code>
+
+<h4 id="terser_minified-sourcemap">sourcemap</h4>
+
+(*Boolean*): Whether to produce a .js.map output
+Defaults to <code>True</code>
+
+<h4 id="terser_minified-src">src</h4>
+
+(*<a href="https://bazel.build/docs/build-ref.html#labels">Label</a>, mandatory*): File(s) to minify.
 
 Can be a .js file, a rule producing .js files as its default output, or a rule producing a directory of .js files.
 
 Note that you can pass multiple files to terser, which it will bundle together.
 If you want to do this, you can pass a filegroup here.
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>required</td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="terser_minified-terser_bin">
-        <td>terser_bin</td>
-        <td>
-                            An executable target that runs Terser
-                                </td>
-        <td><a href="https://bazel.build/docs/build-ref.html#labels">Label</a></td>
-        <td>optional</td>
-        <td>
-            @npm//@bazel/bin:terser
-        </td>
-      </tr>
-        </tbody>
-</table>
+
+
+<h4 id="terser_minified-terser_bin">terser_bin</h4>
+
+(*<a href="https://bazel.build/docs/build-ref.html#labels">Label</a>*): An executable target that runs Terser
+Defaults to <code>@npm//@bazel/bin:terser</code>
 
 

@@ -38,113 +38,72 @@ jasmine_node_test(<a href="#jasmine_node_test-name">name</a>, <a href="#jasmine_
 
 **PARAMETERS**
 
-<table class="table table-params">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  </thead>
-  <tbody>
-            <tr id="jasmine_node_test-name">
-        <td>name</td>
-        <td>
-                            Name of the resulting label
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-            <tr id="jasmine_node_test-srcs">
-        <td>srcs</td>
-        <td>
-                            JavaScript source files containing Jasmine specs
-                    </td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="jasmine_node_test-data">
-        <td>data</td>
-        <td>
-                            Runtime dependencies which will be loaded while the test executes
-                    </td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="jasmine_node_test-deps">
-        <td>deps</td>
-        <td>
-                            Other targets which produce JavaScript, such as ts_library
-                    </td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="jasmine_node_test-expected_exit_code">
-        <td>expected_exit_code</td>
-        <td>
-                            The expected exit code for the test.
-                    </td>
-        <td>
-            0
-        </td>
-      </tr>
-            <tr id="jasmine_node_test-tags">
-        <td>tags</td>
-        <td>
-                            Bazel tags applied to test
-                    </td>
-        <td>
-            []
-        </td>
-      </tr>
-            <tr id="jasmine_node_test-config_file">
-        <td>config_file</td>
-        <td>
-                            (experimental) label of a file containing Jasmine JSON config.
 
-  Note that not all configuration options are honored, and
-  we expect some strange feature interations.
-  For example, the filter for which files are instrumented for
-  code coverage doesn't understand the spec_files setting in the config.
+<h4 id="jasmine_node_test-name">name</h4>
 
-  See https://jasmine.github.io/setup/nodejs.html#configuration
-                    </td>
-        <td>
-            None
-        </td>
-      </tr>
-            <tr id="jasmine_node_test-jasmine">
-        <td>jasmine</td>
-        <td>
-                            A label providing the <code>@bazel/jasmine</code> npm dependency.
-                    </td>
-        <td>
-            "@npm//@bazel/jasmine"
-        </td>
-      </tr>
-            <tr id="jasmine_node_test-jasmine_entry_point">
-        <td>jasmine_entry_point</td>
-        <td>
-                            A label providing the <code>@bazel/jasmine</code> entry point.
-                    </td>
-        <td>
-            "@npm//@bazel/jasmine:jasmine_runner.js"
-        </td>
-      </tr>
-            <tr id="jasmine_node_test-kwargs">
-        <td>kwargs</td>
-        <td>
-                            Remaining arguments are passed to the test rule
-                    </td>
-        <td>
-            
-        </td>
-      </tr>
-        </tbody>
-</table>
+Name of the resulting label
+
+
+
+<h4 id="jasmine_node_test-srcs">srcs</h4>
+
+JavaScript source files containing Jasmine specs
+
+Defaults to <code>[]</code>
+
+<h4 id="jasmine_node_test-data">data</h4>
+
+Runtime dependencies which will be loaded while the test executes
+
+Defaults to <code>[]</code>
+
+<h4 id="jasmine_node_test-deps">deps</h4>
+
+Other targets which produce JavaScript, such as ts_library
+
+Defaults to <code>[]</code>
+
+<h4 id="jasmine_node_test-expected_exit_code">expected_exit_code</h4>
+
+The expected exit code for the test.
+
+Defaults to <code>0</code>
+
+<h4 id="jasmine_node_test-tags">tags</h4>
+
+Bazel tags applied to test
+
+Defaults to <code>[]</code>
+
+<h4 id="jasmine_node_test-config_file">config_file</h4>
+
+(experimental) label of a file containing Jasmine JSON config.
+
+Note that not all configuration options are honored, and
+we expect some strange feature interations.
+For example, the filter for which files are instrumented for
+code coverage doesn't understand the spec_files setting in the config.
+
+See https://jasmine.github.io/setup/nodejs.html#configuration
+
+Defaults to <code>None</code>
+
+<h4 id="jasmine_node_test-jasmine">jasmine</h4>
+
+A label providing the <code>@bazel/jasmine</code> npm dependency.
+
+Defaults to <code>"@npm//@bazel/jasmine"</code>
+
+<h4 id="jasmine_node_test-jasmine_entry_point">jasmine_entry_point</h4>
+
+A label providing the <code>@bazel/jasmine</code> entry point.
+
+Defaults to <code>"@npm//@bazel/jasmine:jasmine_runner.js"</code>
+
+<h4 id="jasmine_node_test-kwargs">kwargs</h4>
+
+Remaining arguments are passed to the test rule
+
+
 
 
