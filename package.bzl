@@ -56,13 +56,11 @@ def rules_nodejs_dev_dependencies():
     _maybe(
         http_archive,
         name = "io_bazel_stardoc",
-        # Workaround for https://github.com/bazelbuild/stardoc/issues/43
-        patches = ["@build_bazel_rules_nodejs//:stardoc.patch"],
-        sha256 = "6d07d18c15abb0f6d393adbd6075cd661a2219faab56a9517741f0fc755f6f3c",
-        strip_prefix = "stardoc-0.4.0",
+        sha256 = "ab8b3c6d109e9403ab810dd0a4a8f3a93bd9b8958829188a9da50a03c3562161",
+        strip_prefix = "stardoc-60ed41eb7ace93964abd21bbb897b47b8606e9a7",
         urls = [
-            "https://mirror.bazel.build/github.com/bazelbuild/stardoc/archive/0.4.0.tar.gz",
-            "https://github.com/bazelbuild/stardoc/archive/0.4.0.tar.gz",
+            # TODO: switch back to upstream after bazelbuild/bazel#12286 is merged and available in a stardoc release
+            "https://github.com/alexeagle/stardoc/archive/60ed41eb7ace93964abd21bbb897b47b8606e9a7.tar.gz",
         ],
     )
 

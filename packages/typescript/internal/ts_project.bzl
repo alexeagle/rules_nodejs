@@ -373,17 +373,14 @@ def ts_project_macro(
 
     Args:
         name: A name for the target.
-
             We recommend you use the basename (no `.json` extension) of the tsconfig file that should be compiled.
 
         srcs: List of labels of TypeScript source files to be provided to the compiler.
-
             If absent, defaults to `**/*.ts[x]` (all TypeScript files in the package).
 
         deps: List of labels of other rules that produce TypeScript typings (.d.ts files)
 
         tsconfig: Label of the tsconfig.json file to use for the compilation
-
             To support "chaining" of more than one extended config, this label could be a target that
             provdes `TsConfigInfo` such as `ts_config`.
 
@@ -431,7 +428,6 @@ def ts_project_macro(
         args: List of strings of additional command-line arguments to pass to tsc.
 
         tsc: Label of the TypeScript compiler binary to run.
-
             For example, `tsc = "@my_deps//typescript/bin:tsc"`
             Or you can pass a custom compiler binary instead.
 
