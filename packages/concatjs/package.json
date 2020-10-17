@@ -1,0 +1,23 @@
+{
+    "name": "@bazel/concatjs",
+    "peerDependencies": {
+        "typescript": ">=3.0.0 <4.0"
+    },
+    "description": "Google's fast bundler and compatible tooling",
+    "license": "Apache-2.0",
+    "version": "0.0.0-PLACEHOLDER",
+    "repository": {
+        "type" : "git",
+        "url" : "https://github.com/bazelbuild/rules_nodejs.git",
+        "directory": "packages/concatjs"
+    },
+    "bugs": {
+        "url": "https://github.com/bazelbuild/rules_nodejs/issues"
+    },
+    "keywords": [
+        "bazel"
+    ],
+    "scripts": {
+      "postinstall": "node npm_version_check.js"
+    }
+}

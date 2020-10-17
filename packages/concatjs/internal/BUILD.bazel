@@ -15,23 +15,7 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
 # gazelle:exclude worker_protocol.proto
-load("@npm//typescript:index.bzl", "tsc")
-
 package(default_visibility = ["//visibility:public"])
-
-tsc(
-    name = "compile",
-    outs = ["ts_project_options_validator.js"],
-    args = [
-        "--outDir $(RULEDIR)",
-        "$(execpath ts_project_options_validator.ts)",
-        "--types node",
-    ],
-    data = [
-        "ts_project_options_validator.ts",
-        "@npm//@types/node",
-    ],
-)
 
 bzl_library(
     name = "bzl",
@@ -43,6 +27,7 @@ bzl_library(
     deps = [
         "@build_bazel_rules_nodejs//:bzl",
         "@build_bazel_rules_nodejs//internal/common:bzl",
+        "@build_bazel_rules_typescript//internal:bzl",
     ],
 )
 
@@ -59,8 +44,8 @@ genrule(
 filegroup(
     name = "package_contents",
     srcs = [
-        "ts_config.bzl",
-        "ts_project.bzl",
+        "build_defs.bzl",
+        "//packages/typescript/internal/devserver:package_contents",
     ],
     visibility = ["//packages/typescript:__subpackages__"],
 )

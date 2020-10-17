@@ -1,0 +1,20 @@
+# @bazel/concatjs
+
+Concatjs is a JavaScript bundler, in a trivial sense: the UNIX `cat` command is a basic implementation:
+
+```bash
+$ cat one.js two.js > bundle.js
+```
+
+Clearly self-evident is that this bundler is super-fast and simple.
+A performant implementation adds some in-memory caching, and for developer ergonomics you add a simple IIFE wrapper
+around each file so that the Chrome DevTools shows the files in the tree as if they had been independently loaded.
+
+However at its core, concatjs requires a big tradeoff of a migration cost to buy-in, to get this incredible performance.
+The path of the JavaScript files is lost in the bundling process, so they must contain their module ID internally.
+
+Named AMD/UMD (non-anonymous require.js modules) and `goog.module` are the two JS module formats that are compatible with concatjs.
+Most packages do not ship with this format, so in order to use concatjs tooling, you have to shim your code and dependencies.
+
+This is at the core of how Google does JavaScript development.
+So Bazel rules that originated in Google's codebase, such as `ts_library` depend in some ways on producing concatjs output.

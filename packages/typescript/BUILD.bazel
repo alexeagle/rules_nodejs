@@ -17,7 +17,6 @@ load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_test")
 load("@build_bazel_rules_nodejs//:tools/defaults.bzl", "pkg_npm")
 load("@build_bazel_rules_nodejs//tools/stardoc:index.bzl", "stardoc")
 load("//third_party/github.com/bazelbuild/bazel-skylib:rules/copy_file.bzl", "copy_file")
-load(":replacements.bzl", "TYPESCRIPT_REPLACEMENTS")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -30,7 +29,6 @@ bzl_library(
     ],
     deps = [
         "//packages/typescript/internal:bzl",
-        "//packages/typescript/internal/devserver:bzl",
         "@build_bazel_rules_nodejs//:bzl",
         "@build_bazel_rules_nodejs//internal/common:bzl",
         "@build_bazel_rules_nodejs//internal/node:bzl",
@@ -84,18 +82,9 @@ pkg_npm(
         "index.bzl",
         "package.bzl",
         "package.json",
-        "//packages/typescript/devserver:package_contents",
         "//packages/typescript/internal:package_contents",
-        "//packages/typescript/third_party/npm/requirejs:package_contents",
     ],
     build_file_content = "",
-    nested_packages = [
-        "@build_bazel_rules_typescript//:npm_bazel_typescript_package",
-    ],
-    substitutions = TYPESCRIPT_REPLACEMENTS,
-    vendor_external = [
-        "build_bazel_rules_typescript",
-    ],
     deps = [
         ":npm_version_check",
         "//packages/typescript/internal:BUILD",

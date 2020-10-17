@@ -17,7 +17,7 @@ load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 licenses(["notice"])  # Apache 2.0
 
 package(default_visibility = [
-    "//packages/typescript:__subpackages__",
+    "//packages/concatjs:__subpackages__",
     "//third_party/bazel_rules/rules_typescript/internal:__subpackages__",
 ])
 

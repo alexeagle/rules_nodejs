@@ -1,4 +1,4 @@
-# Copyright 2019 The Bazel Authors. All rights reserved.
+# Copyright 2017 The Bazel Authors. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,16 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""This contains references to the symbols we want documented.
+"""Public API surface is re-exported here.
 
-We can't point stardoc to the top-level index.bzl since then it will see macros rather than the rules they wrap.
-So this is a copy of index.bzl with macro indirection removed.
+Users should not load files under "/internal"
 """
 
+load("//packages/typescript/internal:build_defs.bzl", _ts_library = "ts_library_macro")
 load("//packages/typescript/internal:ts_config.bzl", _ts_config = "ts_config")
 load("//packages/typescript/internal:ts_project.bzl", _ts_project = "ts_project_macro")
+load("//packages/typescript/internal/devserver:ts_devserver.bzl", _ts_devserver = "ts_devserver_macro")
 
+ts_library = _ts_library
 ts_config = _ts_config
+ts_devserver = _ts_devserver
 ts_project = _ts_project
-# DO NOT ADD MORE rules here unless they appear in the generated docsite.
-# Run yarn stardoc to re-generate the docsite.
+# If adding rules here also add to index.docs.bzl
