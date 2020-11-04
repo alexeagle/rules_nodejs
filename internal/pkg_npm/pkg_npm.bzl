@@ -82,8 +82,14 @@ PKG_NPM_ATTRS = dict(NODE_CONTEXT_ATTRS, **{
         doc = """Other pkg_npm rules whose content is copied into this package.""",
         allow_files = True,
     ),
+    "pack": attr.output(
+        doc = """Output file where a convenience script will be written to run 'npm pack'""",
+    ),
     "package_name": attr.string(
         doc = """Optional package_name that this npm package may be imported as.""",
+    ),
+    "publish": attr.output(
+        doc = """Output file where a convenience script will be written to run 'npm publish'""",
     ),
     "replace_with_version": attr.string(
         doc = """DEPRECATED: use substitutions instead.
@@ -127,12 +133,6 @@ See the section on stamping in the [README](stamping)
         allow_single_file = True,
     ),
 })
-
-# Used in angular/angular /packages/bazel/src/ng_package/ng_package.bzl
-PKG_NPM_OUTPUTS = {
-    "pack": "%{name}.pack",
-    "publish": "%{name}.publish",
-}
 
 # Takes a depset of files and returns a corresponding list of file paths without any files
 # that aren't part of the specified package path. Also include files from external repositories
@@ -305,5 +305,20 @@ pkg_npm = rule(
     implementation = _pkg_npm,
     attrs = PKG_NPM_ATTRS,
     doc = _DOC,
-    outputs = PKG_NPM_OUTPUTS,
 )
+
+def pkg_npm_macro(name, **kwargs):
+    pkg_npm(
+        name = name,
+        # pack = select({
+        #     "@bazel_tools//src/conditions:host_windows": name + ".pack.bat",
+        #     "//conditions:default": name + ".pack",
+        # }),
+        # publish = select({
+        #     "@bazel_tools//src/conditions:host_windows": name + ".publish.bat",
+        #     "//conditions:default": name + ".publish",
+        # }),
+        pack = name + ".pack",
+        publish = name + ".publish",
+        **kwargs
+    )
