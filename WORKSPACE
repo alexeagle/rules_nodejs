@@ -42,7 +42,12 @@ local_repository(
 # Setup rules_nodejs npm dependencies
 #
 
-load("@build_bazel_rules_nodejs//:index.bzl", "npm_install", "yarn_install")
+load("@build_bazel_rules_nodejs//:index.bzl", "npm_fetch_deps", "npm_install", "yarn_install")
+
+npm_fetch_deps(
+    name = "deps",
+    package_lock = "//:package-lock.json",
+)
 
 yarn_install(
     name = "npm",

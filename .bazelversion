@@ -1,1 +1,3 @@
-3.6.0
+last_green
+# Needs to include https://github.com/bazelbuild/bazel/pull/12777
+# which is unreleased as of Jan 2021

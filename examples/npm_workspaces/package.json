@@ -1,0 +1,9 @@
+{
+    "name": "examples_npm_workspaces",
+    "engines": {
+        "npm": "7"
+    },
+    "devDependencies": {
+        "typescript": "^4.1.3"
+    }
+}

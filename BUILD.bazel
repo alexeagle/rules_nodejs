@@ -15,6 +15,7 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@build_bazel_rules_nodejs//:index.bzl", "COMMON_REPLACEMENTS", "pkg_npm")
 load("//:tools/defaults.bzl", "codeowners", "pkg_tar")
+load("//internal/npm_install:node_modules.bzl", "node_modules")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -117,3 +118,10 @@ pkg_tar(
     tags = ["manual"],
 )
 # END-INTERNAL
+
+node_modules(
+    name = "node_modules",
+    packages = [
+        "@deps//:JSONStream",
+    ],
+)
