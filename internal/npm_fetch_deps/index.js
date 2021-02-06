@@ -104,30 +104,41 @@ ${readDeps(selfpkg['devDependencies']).sort().map(p => `        ${p},`).join('\n
 // ${fs.readdirSync('.').filter(f => f.endsWith('.tgz')).map(f => `    "${f}",`).join('\n')}
 // ])`)
   
-  Object.entries(lock['dependencies']).forEach(([pkg, pkginfo]) => {
-    if (pkginfo['version'].startsWith('file:')) {
-      rootBuild.push(`# Don't have a way to represent file:// packages: ${pkg}`);
-      return;
-    }
-    const nestedDeps = [];
-    if (!pkginfo['dependencies']) {
-      nestedDeps.push('# (no dependencies)');
-    } else {
-      nestedDeps.push(...Object.entries(pkginfo['dependencies'])
-                          .map(([k,v]) => `${k.replace("/", "-")}-${v['version']}`)
-                          .map(v => `"//:${v}"`));
-    }
-    rootBuild.push(`
+  const writtenDeps = []
+  function writeRulesForDeps(deps) {
+    if (!deps) return;
+    Object.entries(deps).forEach(([pkg, pkginfo]) => {
+      if (pkginfo['version'].startsWith('file:')) {
+        rootBuild.push(`# Don't have a way to represent file:// packages: ${pkg}`);
+        return;
+      }
+      const nestedDeps = [];
+      if (!pkginfo['dependencies']) {
+        nestedDeps.push('# (no dependencies)');
+      } else {
+        nestedDeps.push(...Object.entries(pkginfo['dependencies'])
+                            .map(([k,v]) => `${k.replace("/", "-")}-${v['version']}`)
+                            .map(v => `"//:${v}"`));
+      }
+      writeRulesForDeps(pkginfo['dependencies']);
+      const rulename = pkg.replace("/", "-") + '-' + pkginfo['version']
+      if (!writtenDeps.includes(rulename)) {
+        writtenDeps.push(rulename)
+        rootBuild.push(`
 npm_tarball(
-    name = "${pkg.replace("/", "-")}-${pkginfo['version']}",
+    name = "${rulename}",
     src = "${pkg.replace("/", "-")}-${pkginfo['version']}.tgz",
     package_name = "${pkg}",
     deps = [
 ${nestedDeps.map(p => `        ${p},`).join('\n')}
     ],
 )
-`)
-  });
+`);
+      }
+    });
+  }
+
+  writeRulesForDeps(lock['dependencies'])
 
   fs.writeFileSync('BUILD.bazel', rootBuild.join('\n'));
 

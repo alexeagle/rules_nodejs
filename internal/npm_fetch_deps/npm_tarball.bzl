@@ -12,13 +12,13 @@ def _npm_tarball(ctx):
         fail("when given a src, must also tell the package_name for it")
     direct = []
     if ctx.attr.src:
-        direct.push(struct(
+        direct.append(struct(
             package_name = ctx.attr.package_name,
             tarball = ctx.file.src,
         ))
     return [NpmTarballInfo(tarballs = depset(
         direct,
-        transitive = [d[NpmTarballInfo] for d in ctx.attr.deps],
+        transitive = [d[NpmTarballInfo].tarballs for d in ctx.attr.deps],
     ))]
 
 npm_tarball = rule(
