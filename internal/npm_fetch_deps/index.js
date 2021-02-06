@@ -47,22 +47,30 @@ async function main(args) {
         throw new Error('no resolved property for ' + JSON.stringify(lock['dependencies'][key]));
       }
       const tarfile = path.basename(depinfo['resolved']);
-      const nestedDeps = [];
-      if (!depinfo['dependencies']) {
-        nestedDeps.push('# (no dependencies)');
-      } else {
-        nestedDeps.push(...Object.values(depinfo['dependencies'])
-                            .map(v => path.basename(v['resolved']))
-                            .map(v => `"//:${v}"`));
-      }
+//       const nestedDeps = [];
+//       if (!depinfo['dependencies']) {
+//         nestedDeps.push('# (no dependencies)');
+//       } else {
+//         nestedDeps.push(...Object.values(depinfo['dependencies'])
+//                             .map(v => path.basename(v['resolved']))
+//                             .map(v => `"//:${v}"`));
+//       }
 
-      nestedBuild.push(`# dependency ${key} ${value}
-npm_tarball(
-   name = "${path.basename(key)}",
-   src = "//:${tarfile}",
-   deps = [
-${nestedDeps.map(p => `        ${p},`).join('\n')}
-   ],
+//       nestedBuild.push(`# dependency ${key} ${value}
+// npm_tarball(
+//    name = "${path.basename(key)}",
+//    src = "//:${tarfile}",
+//    package_name = "${key}",
+//    deps = [
+// ${nestedDeps.map(p => `        ${p},`).join('\n')}
+//    ],
+// )`);
+      
+
+      nestedBuild.push(`
+alias(
+    name = "${path.basename(key)}",
+    actual = "//:${path.parse(tarfile).name}",
 )`);
       mkdirp(key);
       fs.writeFileSync(path.join(key, 'BUILD.bazel'), nestedBuild.join('\n'));
@@ -72,7 +80,7 @@ ${nestedDeps.map(p => `        ${p},`).join('\n')}
   }
 
   rootBuild.push(`
-# dependencies listed in package.json
+# Shorthand target to get all dependencies listed in package.json
 npm_tarball(
     name = "dependencies",
     deps = [
@@ -82,7 +90,7 @@ ${readDeps(selfpkg['dependencies']).sort().map(p => `        ${p},`).join('\n')}
 
 
   rootBuild.push(`
-# devDependencies listed in package.json
+# Shorthand target to get all devDependencies listed in package.json
 npm_tarball(
     name = "devDependencies",
     deps = [
@@ -90,11 +98,37 @@ ${readDeps(selfpkg['devDependencies']).sort().map(p => `        ${p},`).join('\n
     ],
 )`);
 
-  rootBuild.push(`
-exports_files([
-${fs.readdirSync('.').filter(f => f.endsWith('.tgz')).map(f => `    "${f}",`).join('\n')}
-])`)
+//   rootBuild.push(`
+// # Allow any tar file to be referenced from some other package??
+// exports_files([
+// ${fs.readdirSync('.').filter(f => f.endsWith('.tgz')).map(f => `    "${f}",`).join('\n')}
+// ])`)
   
+  Object.entries(lock['dependencies']).forEach(([pkg, pkginfo]) => {
+    if (pkginfo['version'].startsWith('file:')) {
+      rootBuild.push(`# Don't have a way to represent file:// packages: ${pkg}`);
+      return;
+    }
+    const nestedDeps = [];
+    if (!pkginfo['dependencies']) {
+      nestedDeps.push('# (no dependencies)');
+    } else {
+      nestedDeps.push(...Object.entries(pkginfo['dependencies'])
+                          .map(([k,v]) => `${k.replace("/", "-")}-${v['version']}`)
+                          .map(v => `"//:${v}"`));
+    }
+    rootBuild.push(`
+npm_tarball(
+    name = "${pkg.replace("/", "-")}-${pkginfo['version']}",
+    src = "${pkg.replace("/", "-")}-${pkginfo['version']}.tgz",
+    package_name = "${pkg}",
+    deps = [
+${nestedDeps.map(p => `        ${p},`).join('\n')}
+    ],
+)
+`)
+  });
+
   fs.writeFileSync('BUILD.bazel', rootBuild.join('\n'));
 
   return 0;

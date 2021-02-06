@@ -10,7 +10,7 @@ def _fetch(repository_ctx, packages):
         if "resolved" not in dep.keys():
             continue
         repository_ctx.download(
-            output = _basename(dep["resolved"]),
+            output = name.replace("/", "-") + "-" + dep["version"] + ".tgz",
             url = dep["resolved"],
             integrity = dep["integrity"],
         )
