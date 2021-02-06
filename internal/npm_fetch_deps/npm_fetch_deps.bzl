@@ -39,12 +39,14 @@ def _npm_fetch_deps(repository_ctx):
     )
     repository_ctx.template(
         "index.js",
-        repository_ctx.path(Label("//internal/npm_install:index2.js")),
+        repository_ctx.path(Label("//internal/npm_fetch_deps:index.js")),
         {},
     )
+    print("run index.js")
     result = repository_ctx.execute([
         get_node_label(repository_ctx),
         "index.js",
+        repository_ctx.path(repository_ctx.attr.package_lock),
     ])
     if result.return_code:
         fail("index2.ts failed: \nSTDOUT:\n%s\nSTDERR:\n%s" % (result.stdout, result.stderr))

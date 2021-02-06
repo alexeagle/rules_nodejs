@@ -1,0 +1,55 @@
+# BEGIN-INTERNAL
+# avoid leaking dependencies
+load("//:index.bzl", "generated_file_test")
+load("//packages/rollup:index.bzl", "rollup_bundle")
+load("//packages/terser:index.bzl", "terser_minified")
+load("//packages/typescript:index.bzl", "ts_project")
+
+_RUNTIME_DEPS = ["@npm//@npmcli/arborist"]
+
+ts_project(
+    name = "typecheck",
+    srcs = ["generate_build_file.ts"],
+    deps = _RUNTIME_DEPS + [
+        "@npm//@types/node",
+    ],
+    tsconfig = {
+        "compilerOptions": {
+            "moduleResolution": "node",
+            "target": "ES2017",
+            "strict": True,
+        },
+    },
+)
+
+rollup_bundle(
+    name = "bundle",
+    config_file = "rollup.config.js",
+    entry_point = "generate_build_file.js",
+    format = "cjs",
+    sourcemap = "hidden",
+    deps = _RUNTIME_DEPS + [
+        "@npm//@rollup/plugin-commonjs",
+        "@npm//@rollup/plugin-json",
+        "@npm//@rollup/plugin-node-resolve",
+    ],
+)
+
+terser_minified(
+    name = "bundle.min",
+    src = "bundle.js",
+    sourcemap = False,
+)
+
+
+# Even after all that - it's just too big at 1.3MB
+# % ls -alH dist/bin/internal/npm_fetch_deps/bundle.min.js
+# -r-xr-xr-x  1 alex.eagle  wheel  1345717 Feb  6 08:36 dist/bin/internal/npm_fetch_deps/bundle.min.js
+# doubles the size of our distro :(
+# generated_file_test(
+#     name = "checked_in",
+#     generated = "bundle",
+#     src = "index.js",
+# )
+
+# END-INTERNAL
