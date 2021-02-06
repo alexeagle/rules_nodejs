@@ -66,30 +66,35 @@ ${nestedDeps.map(p => `        ${p},`).join('\n')}
 )`);
       mkdirp(key);
       fs.writeFileSync(path.join(key, 'BUILD.bazel'), nestedBuild.join('\n'));
-      result.push('#' + key);
+      result.push(`"//${key}"`);
     }
     return result
   }
 
   rootBuild.push(`
 # dependencies listed in package.json
-filegroup(
+npm_tarball(
     name = "dependencies",
-    srcs = [
-      ${readDeps(selfpkg['dependencies']).map(p => `    ${p}`).join('\n')}
+    deps = [
+${readDeps(selfpkg['dependencies']).sort().map(p => `        ${p},`).join('\n')}
     ],
 )`);
 
 
   rootBuild.push(`
 # devDependencies listed in package.json
-filegroup(
+npm_tarball(
     name = "devDependencies",
-    srcs = [
-${readDeps(selfpkg['devDependencies']).map(p => `        ${p}`).join('\n')}
+    deps = [
+${readDeps(selfpkg['devDependencies']).sort().map(p => `        ${p},`).join('\n')}
     ],
 )`);
 
+  rootBuild.push(`
+exports_files([
+${fs.readdirSync('.').filter(f => f.endsWith('.tgz')).map(f => `    "${f}",`).join('\n')}
+])`)
+  
   fs.writeFileSync('BUILD.bazel', rootBuild.join('\n'));
 
   return 0;
