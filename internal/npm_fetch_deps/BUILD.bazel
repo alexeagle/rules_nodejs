@@ -1,45 +1,47 @@
 # BEGIN-INTERNAL
 # avoid leaking dependencies
-load("//:index.bzl", "generated_file_test")
+load("//:index.bzl", "generated_file_test", "npm_package_bin", "nodejs_binary")
+load("@build_bazel_rules_nodejs//third_party/github.com/bazelbuild/bazel-skylib:rules/write_file.bzl", "write_file")
+load(":node_modules.bzl", "node_modules")
 load("//packages/rollup:index.bzl", "rollup_bundle")
 load("//packages/terser:index.bzl", "terser_minified")
 load("//packages/typescript:index.bzl", "ts_project")
 
-_RUNTIME_DEPS = ["@npm//@npmcli/arborist"]
+# _RUNTIME_DEPS = ["@npm//@npmcli/arborist"]
 
-ts_project(
-    name = "typecheck",
-    srcs = ["generate_build_file.ts"],
-    deps = _RUNTIME_DEPS + [
-        "@npm//@types/node",
-    ],
-    tsconfig = {
-        "compilerOptions": {
-            "moduleResolution": "node",
-            "target": "ES2017",
-            "strict": True,
-        },
-    },
-)
+# ts_project(
+#     name = "typecheck",
+#     srcs = ["generate_build_file.ts"],
+#     deps = _RUNTIME_DEPS + [
+#         "@npm//@types/node",
+#     ],
+#     tsconfig = {
+#         "compilerOptions": {
+#             "moduleResolution": "node",
+#             "target": "ES2017",
+#             "strict": True,
+#         },
+#     },
+# )
 
-rollup_bundle(
-    name = "bundle",
-    config_file = "rollup.config.js",
-    entry_point = "generate_build_file.js",
-    format = "cjs",
-    sourcemap = "hidden",
-    deps = _RUNTIME_DEPS + [
-        "@npm//@rollup/plugin-commonjs",
-        "@npm//@rollup/plugin-json",
-        "@npm//@rollup/plugin-node-resolve",
-    ],
-)
+# rollup_bundle(
+#     name = "bundle",
+#     config_file = "rollup.config.js",
+#     entry_point = "generate_build_file.js",
+#     format = "cjs",
+#     sourcemap = "hidden",
+#     deps = _RUNTIME_DEPS + [
+#         "@npm//@rollup/plugin-commonjs",
+#         "@npm//@rollup/plugin-json",
+#         "@npm//@rollup/plugin-node-resolve",
+#     ],
+# )
 
-terser_minified(
-    name = "bundle.min",
-    src = "bundle.js",
-    sourcemap = False,
-)
+# terser_minified(
+#     name = "bundle.min",
+#     src = "bundle.js",
+#     sourcemap = False,
+# )
 
 
 # Even after all that - it's just too big at 1.3MB
@@ -53,3 +55,52 @@ terser_minified(
 # )
 
 # END-INTERNAL
+
+node_modules(
+    name = "node_modules",
+    packages = [
+        "@deps//shelljs",
+        
+    ],
+)
+
+# npm_package_bin(
+#     name = "run_shelljs",
+#     tool = "@deps//:shelljs-0.8.3.tgz",
+#     outs = [],
+#     data = [":node_modules"],
+# )
+
+write_file(
+    name = "chdir",
+    out = "chdir.js",
+    content = ["process.chdir(__dirname)"],
+)
+
+genrule(
+    name = "use_chdir",
+    tools = [
+        ":hello_world.js",
+        ":chdir.js",
+        ":node_modules",
+        "//toolchains/node:node_bin",
+    ],
+    srcs = [],
+    outs = ["out1"],
+    cmd = " $(execpath //toolchains/node:node_bin) --require=./$(execpath chdir.js) $(execpath hello_world.js) >$@",
+    toolchains = ["@build_bazel_rules_nodejs//toolchains/node:toolchain"],
+    tags = ["manual"], # why not working????
+)
+
+genrule(
+    name = "use_node_path",
+    tools = [
+        ":hello_world.js",
+        ":node_modules",
+        "//toolchains/node:node_bin",
+    ],
+    srcs = [],
+    outs = ["out2"],
+    cmd = "NODE_PATH=$(execpath :node_modules) $(execpath //toolchains/node:node_bin) $(execpath hello_world.js) >$@",
+    toolchains = ["@build_bazel_rules_nodejs//toolchains/node:toolchain"],
+)
