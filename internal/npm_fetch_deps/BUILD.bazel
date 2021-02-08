@@ -2,10 +2,12 @@
 # avoid leaking dependencies
 load("//:index.bzl", "generated_file_test", "npm_package_bin", "nodejs_binary")
 load("@build_bazel_rules_nodejs//third_party/github.com/bazelbuild/bazel-skylib:rules/write_file.bzl", "write_file")
+load("//third_party/github.com/bazelbuild/bazel-skylib:rules/copy_file.bzl", "copy_file")
 load(":node_modules.bzl", "node_modules")
 load("//packages/rollup:index.bzl", "rollup_bundle")
 load("//packages/terser:index.bzl", "terser_minified")
 load("//packages/typescript:index.bzl", "ts_project")
+load("//internal/common:copy_to_bin.bzl", "copy_to_bin")
 
 # _RUNTIME_DEPS = ["@npm//@npmcli/arborist"]
 
@@ -77,19 +79,22 @@ write_file(
     content = ["process.chdir(__dirname)"],
 )
 
+copy_to_bin(
+    name = "entry_point_in_bindir",
+    srcs = ["hello_world.js"],
+)
+
 genrule(
     name = "use_chdir",
     tools = [
-        ":hello_world.js",
-        ":chdir.js",
+        ":entry_point_in_bindir",
         ":node_modules",
         "//toolchains/node:node_bin",
     ],
     srcs = [],
     outs = ["out1"],
-    cmd = " $(execpath //toolchains/node:node_bin) --require=./$(execpath chdir.js) $(execpath hello_world.js) >$@",
+    cmd = "NODE_DEBUG=module $(execpath //toolchains/node:node_bin) $(execpath :entry_point_in_bindir) >$@",
     toolchains = ["@build_bazel_rules_nodejs//toolchains/node:toolchain"],
-    tags = ["manual"], # why not working????
 )
 
 genrule(
