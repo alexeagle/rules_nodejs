@@ -15,7 +15,7 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@build_bazel_rules_nodejs//:index.bzl", "COMMON_REPLACEMENTS", "pkg_npm")
 load("//:tools/defaults.bzl", "codeowners", "pkg_tar")
-load("//internal/npm_fetch_deps:node_modules.bzl", "node_modules")
+load("//internal/npm_tarballs:npm_install_tarballs.bzl", "npm_install_tarballs")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -119,7 +119,7 @@ pkg_tar(
 )
 # END-INTERNAL
 
-node_modules(
+npm_install_tarballs(
     name = "node_modules",
     packages = [
         "@deps//conventional-changelog-cli",

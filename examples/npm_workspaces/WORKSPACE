@@ -24,9 +24,9 @@ http_archive(
     urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/3.0.0/rules_nodejs-3.0.0.tar.gz"],
 )
 
-load("@build_bazel_rules_nodejs//:index.bzl", "npm_fetch_deps")
+load("@build_bazel_rules_nodejs//:index.bzl", "npm_fetch_tarballs")
 
-npm_fetch_deps(
+npm_fetch_tarballs(
     name = "fetch_deps",
     package_lock = "//package-lock.json",
 )

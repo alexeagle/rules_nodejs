@@ -2,7 +2,7 @@
 load("//:providers.bzl", "ExternalNpmPackageInfo")
 load(":npm_tarball.bzl", "NpmTarballInfo")
 
-def _node_modules(ctx):
+def _npm_install_tarballs(ctx):
     out = ctx.actions.declare_directory("node_modules")
     chdir = ctx.actions.declare_file("_%s.chdir.js" % ctx.label.name)
 
@@ -73,8 +73,8 @@ def _node_modules(ctx):
 # - toolchains?
 # - no way to reference files inside the node_modules
 
-node_modules = rule(
-    implementation = _node_modules,
+npm_install_tarballs = rule(
+    implementation = _npm_install_tarballs,
     attrs = {
         "packages": attr.label_list(
             mandatory = True,

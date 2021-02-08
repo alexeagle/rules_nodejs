@@ -31,7 +31,7 @@ load(
 )
 load("//internal/node:node_repositories.bzl", _node_repositories = "node_repositories")
 load("//internal/node:npm_package_bin.bzl", _npm_bin = "npm_package_bin")
-load("//internal/npm_fetch_deps:npm_fetch_deps.bzl", _npm_fetch_deps = "npm_fetch_deps")
+load("//internal/npm_tarballs:npm_fetch_tarballs.bzl", _npm_fetch_tarballs = "npm_fetch_tarballs")
 load("//internal/npm_install:npm_install.bzl", _npm_install = "npm_install", _yarn_install = "yarn_install")
 load("//internal/pkg_npm:pkg_npm.bzl", _pkg_npm = "pkg_npm_macro")
 load("//internal/pkg_web:pkg_web.bzl", _pkg_web = "pkg_web")
@@ -78,9 +78,9 @@ def yarn_install(**kwargs):
     _node_repositories()
     _yarn_install(**kwargs)
 
-def npm_fetch_deps(**kwargs):
+def npm_fetch_tarballs(**kwargs):
     _node_repositories()
-    _npm_fetch_deps(**kwargs)
+    _npm_fetch_tarballs(**kwargs)
 
 # Currently used Bazel version. This version is what the rules here are tested
 # against.

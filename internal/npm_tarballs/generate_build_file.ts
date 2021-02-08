@@ -1,4 +1,4 @@
-// Variant of generate_build_file that works with new npm_fetch_deps rule
+// Variant of generate_build_file that works with new npm_fetch_tarballs rule
 // TODO(alexeagle): maybe it wants to be factored together into one program?
 
 import * as fs from 'fs'

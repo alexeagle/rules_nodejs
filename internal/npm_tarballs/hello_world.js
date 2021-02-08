@@ -1,4 +1,4 @@
-if (!require.resolve('shelljs').includes('bin/internal/npm_fetch_deps/')) {
+if (!require.resolve('shelljs').includes('bin/internal/npm_tarballs/')) {
     throw new Error("resolved from wrong node modules path");
 }
 

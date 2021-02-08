@@ -2,8 +2,7 @@
 # avoid leaking dependencies
 load("//:index.bzl", "generated_file_test", "npm_package_bin", "nodejs_binary")
 load("@build_bazel_rules_nodejs//third_party/github.com/bazelbuild/bazel-skylib:rules/write_file.bzl", "write_file")
-load("//third_party/github.com/bazelbuild/bazel-skylib:rules/copy_file.bzl", "copy_file")
-load(":node_modules.bzl", "node_modules")
+load(":npm_install_tarballs.bzl", "npm_install_tarballs")
 load("//packages/rollup:index.bzl", "rollup_bundle")
 load("//packages/terser:index.bzl", "terser_minified")
 load("//packages/typescript:index.bzl", "ts_project")
@@ -47,8 +46,8 @@ load("//internal/common:copy_to_bin.bzl", "copy_to_bin")
 
 
 # Even after all that - it's just too big at 1.3MB
-# % ls -alH dist/bin/internal/npm_fetch_deps/bundle.min.js
-# -r-xr-xr-x  1 alex.eagle  wheel  1345717 Feb  6 08:36 dist/bin/internal/npm_fetch_deps/bundle.min.js
+# % ls -alH dist/bin/internal/npm_fetch_tarballs/bundle.min.js
+# -r-xr-xr-x  1 alex.eagle  wheel  1345717 Feb  6 08:36 dist/bin/internal/npm_fetch_tarballs/bundle.min.js
 # doubles the size of our distro :(
 # generated_file_test(
 #     name = "checked_in",
@@ -58,7 +57,12 @@ load("//internal/common:copy_to_bin.bzl", "copy_to_bin")
 
 # END-INTERNAL
 
-node_modules(
+###
+# Testing and demonstration
+###
+
+# Run `npm install`
+npm_install_tarballs(
     name = "node_modules",
     packages = [
         "@deps//shelljs",
@@ -66,24 +70,15 @@ node_modules(
     ],
 )
 
-# npm_package_bin(
-#     name = "run_shelljs",
-#     tool = "@deps//:shelljs-0.8.3.tgz",
-#     outs = [],
-#     data = [":node_modules"],
-# )
-
-write_file(
-    name = "chdir",
-    out = "chdir.js",
-    content = ["process.chdir(__dirname)"],
-)
-
+# To resolve node_modules, the script with the 'require' statement should be in the output tree
+# where the node_modules directory was created.
 copy_to_bin(
     name = "entry_point_in_bindir",
     srcs = ["hello_world.js"],
 )
 
+# Now we just call `node bazel-out/arch/bin/path/to/hello_world.js` and it will find shelljs in
+# bazel-out/arch/bin/path/to/node_modules/shelljs
 genrule(
     name = "use_chdir",
     tools = [
@@ -97,6 +92,7 @@ genrule(
     toolchains = ["@build_bazel_rules_nodejs//toolchains/node:toolchain"],
 )
 
+# An alternate way is to use the NODE_PATH environment variable to point node at where the modules were placed
 genrule(
     name = "use_node_path",
     tools = [
@@ -109,3 +105,4 @@ genrule(
     cmd = "NODE_PATH=$(execpath :node_modules) $(execpath //toolchains/node:node_bin) $(execpath hello_world.js) >$@",
     toolchains = ["@build_bazel_rules_nodejs//toolchains/node:toolchain"],
 )
+
