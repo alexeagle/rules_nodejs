@@ -65,10 +65,14 @@ load("//internal/common:copy_to_bin.bzl", "copy_to_bin")
 npm_install_tarballs(
     name = "node_modules",
     packages = [
+        # demo of installing a first-party tarball from `npm pack`??
         "@deps//shelljs",
-        
+        "@deps//terser",
     ],
 )
+
+# load("@deps//typescript:index.bzl", "tsc")
+
 
 # To resolve node_modules, the script with the 'require' statement should be in the output tree
 # where the node_modules directory was created.
@@ -80,7 +84,7 @@ copy_to_bin(
 # Now we just call `node bazel-out/arch/bin/path/to/hello_world.js` and it will find shelljs in
 # bazel-out/arch/bin/path/to/node_modules/shelljs
 genrule(
-    name = "use_chdir",
+    name = "call_in_bindir",
     tools = [
         ":entry_point_in_bindir",
         ":node_modules",
@@ -106,3 +110,51 @@ genrule(
     toolchains = ["@build_bazel_rules_nodejs//toolchains/node:toolchain"],
 )
 
+# A binary target using a first-party entry point
+nodejs_binary(
+    name = "first_party_bin",
+    entry_point = "hello_world.js",
+    data = [":node_modules"],
+)
+
+genrule(
+    name = "use_nodejs_binary",
+    tools = [":first_party_bin"],
+    srcs = [],
+    outs = ["out3"],
+    cmd = "$(execpath :first_party_bin) >$@",
+)
+
+load("//internal/node:directory_entry_point.bzl", "directory_entry_point")
+
+directory_entry_point(
+    name = "call_terser",
+    directory = ":node_modules",
+    path = "terser/bin/thing.js",
+)
+
+# npm_package_bin(
+#     name = "run_terser",
+#     outs = ["minified.js"],
+#     args = [
+#         "$(execpath terser_input.js)",
+#         "--output",
+#         "$@",
+#     ],
+#     data = [
+#         #":node_modules",
+#         "terser_input.js",
+#     ],
+#     # bike-shed these two names
+#     # entry_point = ":node_modules",
+#     # entry_point_subpath = "terser",
+#     tool = "call_terser",
+# )
+
+nodejs_binary(
+    name = "run_terser",
+    entry_point = "call_terser",
+    data = [
+        ":node_modules",
+    ],
+)

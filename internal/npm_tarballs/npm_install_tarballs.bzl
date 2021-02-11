@@ -83,7 +83,9 @@ npm_install_tarballs = rule(
         "offline": attr.bool(
             doc = """"disallow npm from talking to the network during install
 
-requires that the cache was fully populated when the tarballs were fetched"""),
+requires that the cache was fully populated when the tarballs were fetched""",
+            #default = True,
+        ),
         "_node": attr.label(
             executable = True,
             cfg = "target",

@@ -21,6 +21,7 @@ a `module_name` attribute can be `require`d by that name.
 """
 
 load("//:providers.bzl", "ExternalNpmPackageInfo", "JSModuleInfo", "JSNamedModuleInfo", "NodeRuntimeDepsInfo", "node_modules_aspect")
+load("//internal/providers:entry_point_info.bzl", "EntryPointInfo")
 load("//internal/common:expand_into_runfiles.bzl", "expand_location_into_runfiles")
 load("//internal/common:module_mappings.bzl", "module_mappings_runtime_aspect")
 load("//internal/common:path_utils.bzl", "strip_external")
@@ -44,7 +45,7 @@ def _compute_node_modules_root(ctx):
     """Computes the node_modules root from the deps attributes.
 
     Args:
-      ctx: the skylark execution context
+      ctx: the starlark execution context
 
     Returns:
       The node_modules root as a string
@@ -103,16 +104,23 @@ def _ts_to_js(entry_point_path):
         return entry_point_path[:-4] + ".js"
     return entry_point_path
 
+def _entry_point_path(ctx):
+    if EntryPointInfo in ctx.attr.entry_point:
+        info = ctx.attr.entry_point[EntryPointInfo]
+        entry_point = _to_manifest_path(ctx, info.directory) + "/" + info.path
+    else:
+        entry_point = _to_manifest_path(ctx, ctx.file.entry_point)
+
+    return _ts_to_js(entry_point)
+
 def _write_loader_script(ctx):
     if len(ctx.attr.entry_point.files.to_list()) != 1:
         fail("labels in entry_point must contain exactly one file")
 
-    entry_point_path = _ts_to_js(_to_manifest_path(ctx, ctx.file.entry_point))
-
     ctx.actions.expand_template(
         template = ctx.file._loader_template,
         output = ctx.outputs.loader_script,
-        substitutions = {"TEMPLATED_entry_point": entry_point_path},
+        substitutions = {"TEMPLATED_entry_point": _entry_point_path(ctx)},
         is_executable = True,
     )
 
@@ -290,8 +298,9 @@ fi
     #else:
     #    substitutions["TEMPLATED_script_path"] = "$(rlocation \"%s\")" % _to_manifest_path(ctx, ctx.file.entry_point)
     # For now we need to look in both places
-    substitutions["TEMPLATED_entry_point_execroot_path"] = "\"%s\"" % _ts_to_js(_to_execroot_path(ctx, ctx.file.entry_point))
-    substitutions["TEMPLATED_entry_point_manifest_path"] = "$(rlocation \"%s\")" % _ts_to_js(_to_manifest_path(ctx, ctx.file.entry_point))
+    substitutions["TEMPLATED_entry_point_execroot_path"] = "\"%s\"" % _entry_point_path(ctx)
+    # FIXME here too? but can't rlocation it. JUST HACK IT
+    substitutions["TEMPLATED_entry_point_manifest_path"] = "$(rlocation \"%s\")/terser" % _ts_to_js(_to_manifest_path(ctx, ctx.file.entry_point))
 
     ctx.actions.expand_template(
         template = ctx.file._launcher_template,
@@ -307,7 +316,7 @@ fi
         executable = ctx.outputs.launcher_sh
 
     # entry point is only needed in runfiles if it is a .js file
-    if ctx.file.entry_point.extension == "js":
+    if EntryPointInfo in ctx.attr.entry_point or ctx.file.entry_point.extension == "js":
         runfiles.append(ctx.file.entry_point)
 
     return [
