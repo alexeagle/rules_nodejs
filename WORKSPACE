@@ -42,12 +42,23 @@ local_repository(
 # Setup rules_nodejs npm dependencies
 #
 
-load("@build_bazel_rules_nodejs//:index.bzl", "npm_fetch_tarballs", "npm_install", "yarn_install")
+load("@build_bazel_rules_nodejs//:index.bzl", "npm_install", "yarn_install")
 
-npm_fetch_tarballs(
-    name = "deps",
+# npm_fetch_tarballs(
+#     name = "deps",
+#     package_lock = "//:package-lock.json",
+# )
+
+load("@build_bazel_rules_nodejs//internal/npm_tarballs:package_lock.bzl", "translate_package_lock")
+
+translate_package_lock(
+    name = "npm_package_lock",
     package_lock = "//:package-lock.json",
 )
+
+load("@npm_package_lock//:index.bzl", "npm_repositories")
+
+npm_repositories()
 
 yarn_install(
     name = "npm",
