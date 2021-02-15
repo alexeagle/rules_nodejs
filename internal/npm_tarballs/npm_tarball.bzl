@@ -4,7 +4,7 @@ NpmTarballInfo = provider(
     doc = "",
     fields = {
         "tarballs": "depset of needed tarballs",
-    }
+    },
 )
 
 def _npm_tarball(ctx):
@@ -24,9 +24,9 @@ def _npm_tarball(ctx):
 npm_tarball = rule(
     implementation = _npm_tarball,
     attrs = {
-        "src": attr.label(allow_single_file = True),
-        "package_name": attr.string(),
         "deps": attr.label_list(providers = [NpmTarballInfo]),
+        "package_name": attr.string(),
+        "src": attr.label(allow_single_file = True),
     },
     doc = "",
 )

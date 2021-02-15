@@ -1,11 +1,7 @@
 # BEGIN-INTERNAL
 # avoid leaking dependencies
-load("//:index.bzl", "generated_file_test", "npm_package_bin", "nodejs_binary")
-load("@build_bazel_rules_nodejs//third_party/github.com/bazelbuild/bazel-skylib:rules/write_file.bzl", "write_file")
+load("//:index.bzl", "nodejs_binary")
 load(":npm_install_tarballs.bzl", "npm_install_tarballs")
-load("//packages/rollup:index.bzl", "rollup_bundle")
-load("//packages/terser:index.bzl", "terser_minified")
-load("//packages/typescript:index.bzl", "ts_project")
 load("//internal/common:copy_to_bin.bzl", "copy_to_bin")
 
 # _RUNTIME_DEPS = ["@npm//@npmcli/arborist"]
@@ -44,7 +40,6 @@ load("//internal/common:copy_to_bin.bzl", "copy_to_bin")
 #     sourcemap = False,
 # )
 
-
 # Even after all that - it's just too big at 1.3MB
 # % ls -alH dist/bin/internal/npm_fetch_tarballs/bundle.min.js
 # -r-xr-xr-x  1 alex.eagle  wheel  1345717 Feb  6 08:36 dist/bin/internal/npm_fetch_tarballs/bundle.min.js
@@ -61,6 +56,8 @@ load("//internal/common:copy_to_bin.bzl", "copy_to_bin")
 # Testing and demonstration
 ###
 
+load("//internal/node:directory_entry_point.bzl", "directory_entry_point")
+
 # Run `npm install`
 npm_install_tarballs(
     name = "node_modules",
@@ -73,7 +70,6 @@ npm_install_tarballs(
 
 # load("@deps//typescript:index.bzl", "tsc")
 
-
 # To resolve node_modules, the script with the 'require' statement should be in the output tree
 # where the node_modules directory was created.
 copy_to_bin(
@@ -85,47 +81,45 @@ copy_to_bin(
 # bazel-out/arch/bin/path/to/node_modules/shelljs
 genrule(
     name = "call_in_bindir",
+    srcs = [],
+    outs = ["out1"],
+    cmd = "NODE_DEBUG=module $(execpath //toolchains/node:node_bin) $(execpath :entry_point_in_bindir) >$@",
+    toolchains = ["@build_bazel_rules_nodejs//toolchains/node:toolchain"],
     tools = [
         ":entry_point_in_bindir",
         ":node_modules",
         "//toolchains/node:node_bin",
     ],
-    srcs = [],
-    outs = ["out1"],
-    cmd = "NODE_DEBUG=module $(execpath //toolchains/node:node_bin) $(execpath :entry_point_in_bindir) >$@",
-    toolchains = ["@build_bazel_rules_nodejs//toolchains/node:toolchain"],
 )
 
 # An alternate way is to use the NODE_PATH environment variable to point node at where the modules were placed
 genrule(
     name = "use_node_path",
+    srcs = [],
+    outs = ["out2"],
+    cmd = "NODE_PATH=$(execpath :node_modules) $(execpath //toolchains/node:node_bin) $(execpath hello_world.js) >$@",
+    toolchains = ["@build_bazel_rules_nodejs//toolchains/node:toolchain"],
     tools = [
         ":hello_world.js",
         ":node_modules",
         "//toolchains/node:node_bin",
     ],
-    srcs = [],
-    outs = ["out2"],
-    cmd = "NODE_PATH=$(execpath :node_modules) $(execpath //toolchains/node:node_bin) $(execpath hello_world.js) >$@",
-    toolchains = ["@build_bazel_rules_nodejs//toolchains/node:toolchain"],
 )
 
 # A binary target using a first-party entry point
 nodejs_binary(
     name = "first_party_bin",
-    entry_point = "hello_world.js",
     data = [":node_modules"],
+    entry_point = "hello_world.js",
 )
 
 genrule(
     name = "use_nodejs_binary",
-    tools = [":first_party_bin"],
     srcs = [],
     outs = ["out3"],
     cmd = "$(execpath :first_party_bin) >$@",
+    tools = [":first_party_bin"],
 )
-
-load("//internal/node:directory_entry_point.bzl", "directory_entry_point")
 
 directory_entry_point(
     name = "call_terser",
@@ -153,8 +147,8 @@ directory_entry_point(
 
 nodejs_binary(
     name = "run_terser",
-    entry_point = "call_terser",
     data = [
         ":node_modules",
     ],
+    entry_point = "call_terser",
 )

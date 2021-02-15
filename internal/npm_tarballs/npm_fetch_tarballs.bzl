@@ -1,6 +1,6 @@
 ""
 
-load("//internal/node:node_labels.bzl", "get_node_label", "get_npm_label")
+load("//internal/node:node_labels.bzl", "get_node_label")
 
 def _basename(p):
     return p.split("/")[-1]
@@ -17,7 +17,7 @@ def _fetch(repository_ctx, packages):
         )
         # Stuff the tarballs into the npm cache for later (?)
         # Sadly this is way too slow though. Seems like we need to write a
-        # js binary that imports pacote and mimics 
+        # js binary that imports pacote and mimics
         # https://github.com/npm/cli/blob/6141de7b9e866979bf51706fd1be10c54235cf08/lib/cache.js#L97-L103
         # npm = get_npm_label(repository_ctx)
         # repository_ctx.execute(
@@ -34,6 +34,7 @@ def _npm_fetch_tarballs(repository_ctx):
     if lock_version < 2:
         fail("npm_fetch_tarballs only works with npm 7 lockfiles (lockfileVersion >= 2), found %s" % lock_version)
     _fetch(repository_ctx, lock_content)
+
     # recurse one level deeper
     for (name, dep) in lock_content["dependencies"].items():
         if "dependencies" in dep.keys():
@@ -45,7 +46,7 @@ def _npm_fetch_tarballs(repository_ctx):
         repository_ctx.path(Label("//internal/npm_tarballs:index.js")),
         {},
     )
-    
+
     result = repository_ctx.execute([
         get_node_label(repository_ctx),
         "index.js",

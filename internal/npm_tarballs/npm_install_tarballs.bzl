@@ -1,4 +1,5 @@
 ""
+
 load("//:providers.bzl", "ExternalNpmPackageInfo")
 load(":npm_tarball.bzl", "NpmTarballInfo")
 
@@ -9,14 +10,14 @@ def _npm_install_tarballs(ctx):
     tarballs = depset(transitive = [d[NpmTarballInfo].tarballs for d in ctx.attr.packages]).to_list()
     if len(tarballs) == 0:
         fail("packages cannot be empty")
-    
+
     # FIXME: We should use the user's file if there is one in this directory
     package_json = ctx.actions.declare_file("package.json")
 
     # to find our way back to the execroot we go out of bazel-out/arch/bin plus the package name
     segments_to_root = 3 + len(ctx.label.package.split("/")) - 1
     relative_path_to_root = "/".join([".."] * segments_to_root)
-    
+
     ctx.actions.write(chdir, "process.chdir(__dirname)")
     ctx.actions.write(package_json, json.encode({
         "dependencies": {
@@ -57,9 +58,9 @@ def _npm_install_tarballs(ctx):
             files = depset([out]),
         ),
         ExternalNpmPackageInfo(
-        #             "direct_sources": "Depset of direct source files in these external npm package(s)",
-        # "sources": "Depset of direct & transitive source files in these external npm package(s) and transitive dependencies",
-        # "workspace": "The workspace name that these external npm package(s) are provided from",
+            #             "direct_sources": "Depset of direct source files in these external npm package(s)",
+            # "sources": "Depset of direct & transitive source files in these external npm package(s) and transitive dependencies",
+            # "workspace": "The workspace name that these external npm package(s) are provided from",
             direct_sources = depset([out]),
             sources = depset([out]),
             workspace = ctx.label.workspace_name,
@@ -76,15 +77,15 @@ def _npm_install_tarballs(ctx):
 npm_install_tarballs = rule(
     implementation = _npm_install_tarballs,
     attrs = {
-        "packages": attr.label_list(
-            mandatory = True,
-            providers = [NpmTarballInfo],
-        ),
         "offline": attr.bool(
             doc = """"disallow npm from talking to the network during install
 
 requires that the cache was fully populated when the tarballs were fetched""",
             #default = True,
+        ),
+        "packages": attr.label_list(
+            mandatory = True,
+            providers = [NpmTarballInfo],
         ),
         "_node": attr.label(
             executable = True,

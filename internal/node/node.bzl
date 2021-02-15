@@ -21,7 +21,6 @@ a `module_name` attribute can be `require`d by that name.
 """
 
 load("//:providers.bzl", "ExternalNpmPackageInfo", "JSModuleInfo", "JSNamedModuleInfo", "NodeRuntimeDepsInfo", "node_modules_aspect")
-load("//internal/providers:entry_point_info.bzl", "EntryPointInfo")
 load("//internal/common:expand_into_runfiles.bzl", "expand_location_into_runfiles")
 load("//internal/common:module_mappings.bzl", "module_mappings_runtime_aspect")
 load("//internal/common:path_utils.bzl", "strip_external")
@@ -29,6 +28,7 @@ load("//internal/common:preserve_legacy_templated_args.bzl", "preserve_legacy_te
 load("//internal/common:windows_utils.bzl", "create_windows_native_launcher_script", "is_windows")
 load("//internal/linker:link_node_modules.bzl", "module_mappings_aspect", "write_node_modules_manifest")
 load("//internal/node:node_repositories.bzl", "BUILT_IN_NODE_PLATFORMS")
+load("//internal/providers:entry_point_info.bzl", "EntryPointInfo")
 
 def _trim_package_node_modules(package_name):
     # trim a package name down to its path prior to a node_modules
@@ -299,6 +299,7 @@ fi
     #    substitutions["TEMPLATED_script_path"] = "$(rlocation \"%s\")" % _to_manifest_path(ctx, ctx.file.entry_point)
     # For now we need to look in both places
     substitutions["TEMPLATED_entry_point_execroot_path"] = "\"%s\"" % _entry_point_path(ctx)
+
     # FIXME here too? but can't rlocation it. JUST HACK IT
     substitutions["TEMPLATED_entry_point_manifest_path"] = "$(rlocation \"%s\")/terser" % _ts_to_js(_to_manifest_path(ctx, ctx.file.entry_point))
 

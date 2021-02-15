@@ -54,12 +54,12 @@ def _fetch_tarball(repository_ctx, bzl_out, packages):
             for (n, d) in dep["dependencies"].items():
                 deps.append("@" + _repo_name(n, d["version"]))
         build_file_content = _tarball_target_tmpl.format(
-            name=target_name,
-            src=filename,
-            package_name=name,
-            deps=deps,
+            name = target_name,
+            src = filename,
+            package_name = name,
+            deps = deps,
         )
-    
+
         bzl_out.extend([
             " " * 4 + "npm_fetch_tarball(",
             _attr("name", target_name),
@@ -93,6 +93,7 @@ def _translate_package_lock(repository_ctx):
     if lock_version < 2:
         fail("translate_package_lock only works with npm 7 lockfiles (lockfileVersion >= 2), found %s" % lock_version)
     _fetch_tarball(repository_ctx, bzl_content, lock_content)
+
     # recurse two levels deeper (maybe we need to do more?)
     version_lookup = {}
     for (name, dep) in lock_content["dependencies"].items():
