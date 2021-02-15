@@ -122,6 +122,6 @@ pkg_tar(
 npm_install_tarballs(
     name = "node_modules",
     packages = [
-        "@deps//conventional-changelog-cli",
+        "@npm_package_lock//conventional-changelog-cli",
     ],
 )
